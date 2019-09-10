@@ -1,9 +1,12 @@
 import serial
-time.sleep()
+import time
 
-ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=0)
-print("Connected")
+serial_port = input("enter serial")
 
+ser = serial.Serial(f'/dev/tty{serial_port}', 115200, timeout=0)
+ser.write("gs".encode("utf-8"))
+r = ser.read(10)
+print("Received: ", r)
 while 1:
 	moving_cmd = input("3 numbers, split by space: ")
 	moving_cmd = moving_cmd.split(" ")
@@ -12,10 +15,9 @@ while 1:
 		print("Not enough args")
 		continue
 	while 1:
-		to_send = f"sd:{moving_cmd[0]}:{moving_cmd[1]}:{moving_cmd[2]}"
-		ser.write(to_send.encode())
-		time.sleep(0.01)
-		s = ser.read(100)
+		to_send = f"sd:{moving_cmd[0]}:{moving_cmd[1]}:{moving_cmd[2]}\n"
+		ser.write(to_send.encode("utf-8"))
+		s = ser.read(10)
 		print("Received: ", s)
 	
 
