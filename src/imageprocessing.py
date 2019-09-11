@@ -18,7 +18,7 @@ def start(Robo_serial):
     # Capture camera
     device = config.get("vision", "video_capture_device")
     cap = cv2.VideoCapture(device)
-    Robo_serial[0] = 10
+    
 
 
 
@@ -37,9 +37,14 @@ def start(Robo_serial):
         # TODO: find ball coordinates in filtered image
         ball_color_mask, basket_color_mask, ball_coords, basket_coords = vision.apply_ball_color_filter(hsv)
 
-        # TODO: also detect opponent basket
-        # TODO: run AI
-        # optional TODO: run AI on separate thread
+        centerX = frame.shape[1]/2
+
+        if ball_coords[0] > centerX + 40:
+            Robo_serial[0] = 0
+        elif ball_coords[0] < centerX - 40:
+            Robo_serial[0] = 0
+        else:
+            Robo_serial[0] = 15
         
         # Handle keyboard input
         key = cv2.waitKey(1)
