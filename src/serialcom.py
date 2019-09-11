@@ -1,9 +1,10 @@
 import serial
 import serial.tools.list_ports
-
-class RoboSerial():
+from multiprocessing import Process
+class RoboSerial(Process):
 
 	def __init__(self, portname, encoding):
+		Process.__init__(self)
 		self.ser = serial.Serial(f"/dev/{portname}", 115200, timeout=0.01)
 		self.encoding = encoding
 		self.speeds = [0, 0, 0]
