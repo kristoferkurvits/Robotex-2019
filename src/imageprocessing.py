@@ -39,9 +39,7 @@ def start(Robo_serial):
 
         centerX = frame.shape[1]/2
 
-        if ball_coords[0] > centerX + 40:
-            Robo_serial[0] = 0
-        elif ball_coords[0] < centerX - 40:
+        if (ball_coords[0] < centerX + 40) and (ball_coords[0] > centerX - 40):
             Robo_serial[0] = 0
         else:
             Robo_serial[0] = 15
