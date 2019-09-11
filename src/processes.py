@@ -3,16 +3,16 @@ from multiprocessing import Process, Value
 import imageprocessing
 import time
 
-def serial_worker(run, Robo_serial):
+def serial_worker(run, Robo_serial, l):
 
     while 1:
         if run.value:
-            serial_process(Robo_serial)
+            serial_process(Robo_serial, l)
 
-def serial_process(Robo_serial):
+def serial_process(Robo_serial, speeds):
     print("serial thread")
-    Robo_serial.test_serial()
-    print(Robo_serial.speeds)
+    Robo_serial.speeds = speeds
+    Robo_serial.send_speeds()
     time.sleep(1)
 
 
