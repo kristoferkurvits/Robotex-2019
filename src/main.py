@@ -1,6 +1,6 @@
 import processes
 import imageprocessing
-
+from multiprocessing import Process, Value
 from serialcom import RoboSerial
 
 
@@ -20,9 +20,10 @@ if __name__ == "__main__":
     try:
         print(RoboSerial.available_ports())
         
-        portname = input("Choose port")
+        portname = "ttyACM0"
         
         Robo_serial = RoboSerial("ttyACM0", "utf-8")
+        print("Start: ", id(Robo_serial))
     except:
         print("except")
 
@@ -31,11 +32,11 @@ if __name__ == "__main__":
     
     
     while True:
-        print("main",imageprocessing.stop)
+        print("main",imageprocessing.stop())
 
-        if imageprocessing.stop:
-            robot_vision.close()
-            robot_communication.close()
+        if imageprocessing.stop():
+            robot_vision.Close()
+            robot_communication.Close()
             exit()
         input()
         

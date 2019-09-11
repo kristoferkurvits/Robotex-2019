@@ -18,8 +18,8 @@ def start(Robo_serial):
     # Capture camera
     device = config.get("vision", "video_capture_device")
     cap = cv2.VideoCapture(device)
-
-    Robo_serial.speeds = [10, 10, 10]
+    print("In image: ", id(Robo_serial))
+    Robo_serial.set_speeds([10, 10, 10])
 
 
 
