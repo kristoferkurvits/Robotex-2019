@@ -2,13 +2,17 @@ import cv2
 import time
 import vision
 import config
-
+import serialsend
+from multiprocessing import Process
 
 def start():
     # optional TOOD: capture frames on separate thread
     # Capture camera
     device = config.get("vision", "video_capture_device")
     cap = cv2.VideoCapture(2)
+
+
+
 
     # Frame timer for FPS display
     fps = 0
@@ -60,4 +64,10 @@ def start():
 
 
 if __name__ == "__main__":
-    start()
+    serialsend.RoboSerial.available_ports()
+    portname = input("Choose port")
+    Roboserial = serialsend.RoboSerial(portname, "utf-8")
+    sending = Process(name="Serial", target=Roboserial.send_speeds)
+    camera = Process(name="Camera", target=start)
+    camera.start()
+    sending.start()
