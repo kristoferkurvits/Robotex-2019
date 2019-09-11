@@ -35,7 +35,7 @@ def start(Robo_serial):
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         # TODO: find ball coordinates in filtered image
-        ball_color_mask, basket_color_mask = vision.apply_ball_color_filter(hsv)
+        ball_color_mask, basket_color_mask, ball_coords, basket_coords = vision.apply_ball_color_filter(hsv)
 
         # TODO: also detect opponent basket
         # TODO: run AI
@@ -60,6 +60,9 @@ def start(Robo_serial):
             frame_counter_start = time.time()
 
         cv2.putText(frame, str(fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
+        cv2.putText(frame, str(int(ball_coords[0]))+" "+str(int(ball_coords[1])), (int(ball_coords[0]), int(ball_coords[1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255))
+
+        cv2.putText(frame, str(int(basket_coords[0]))+" "+str(int(basket_coords[1])), (int(basket_coords[0]), int(basket_coords[1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 266, 0))
 
         total_img = cv2.bitwise_or(ball_color_mask, basket_color_mask)
 
