@@ -1,9 +1,11 @@
 import serial
 import serial.tools.list_ports
+import multiprocessing
 
-class RoboSerial():
+class RoboSerial(multiprocessing.Process):
 
 	def __init__(self, portname, encoding):
+		multiprocessing.Process.__init__(self)
 		self.ser = serial.Serial(f"/dev/{portname}", 115200, timeout=0.01)
 		self.encoding = encoding
 		self.speeds = [0, 0, 0]
@@ -13,12 +15,6 @@ class RoboSerial():
 		self.ser.write("gs\n".encode(self.encoding))
 		r = self.ser.read(20)
 		print("Test message response: ", r)
-
-	def set_speeds(self, speeds):
-		if len(speeds) != 3:
-			print("Not enough args")
-			return
-		self.speeds = speeds
 
 	def send_speeds(self):
 		speed1, speed2, speed3 = self.speeds
