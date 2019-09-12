@@ -8,7 +8,7 @@ blobparams.filterByInertia = False
 blobparams.filterByColor = False
 blobparams.filterByCircularity = False
 blobparams.filterByArea = True
-blobparams.minArea = 500
+blobparams.minArea = 50
 blobparams.maxArea = 50000
 blobparams.filterByConvexity = False
 detector = cv2.SimpleBlobDetector_create(blobparams)
@@ -21,6 +21,11 @@ basket_color_range = config.get("colors", config.get("vision", "basket_color"))
 # Get boolean image with ball color filter applied
 def apply_ball_color_filter(hsv):
     # Apply ball color filter
+
+    """
+        Apply the best settings for detecting the green "basketball". (Remove noise, find green ball etc.)
+
+    """
     hsv = cv2.medianBlur(hsv, 5)
     mask_ball = cv2.inRange(hsv, ball_color_range["min"], ball_color_range["max"])
     mask_basket = cv2.inRange(hsv, basket_color_range["min"], basket_color_range["max"])

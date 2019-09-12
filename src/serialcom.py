@@ -2,7 +2,7 @@ import serial
 import serial.tools.list_ports
 import multiprocessing
 
-class RoboSerial(multiprocessing.Process):
+class RoboSerial():
 
 	def __init__(self, portname, encoding):
 		multiprocessing.Process.__init__(self)

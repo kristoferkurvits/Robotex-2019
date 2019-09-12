@@ -29,7 +29,7 @@ def start():
 
     # Capture camera
     device = config.get("vision", "video_capture_device")
-    cap = cv2.VideoCapture(2)
+    cap = cv2.VideoCapture(device)
 
     while cap.isOpened():
         # Read BGR frame
