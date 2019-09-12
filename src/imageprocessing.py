@@ -45,6 +45,7 @@ def start(processes_variables):
             processes_variables[2] = 0
 
         else:
+            #Check movement.py.calculate_linear_velocity
             processes_variables[0] = 8
             processes_variables[1] = 8
             processes_variables[2] = 8
