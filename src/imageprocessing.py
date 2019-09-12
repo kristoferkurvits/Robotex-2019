@@ -38,11 +38,17 @@ def start(Robo_serial):
         ball_color_mask, basket_color_mask, ball_coords, basket_coords = vision.apply_ball_color_filter(hsv)
 
         centerX = frame.shape[1]/2
+        print("Center: ", centerX, " ball_coords: ", ball_coords[0])
 
-        if (ball_coords[0] < centerX + 40) and (ball_coords[0] > centerX - 40):
+        if (ball_coords[0] < centerX + 80) and (ball_coords[0] > centerX - 80):
             Robo_serial[0] = 0
+            Robo_serial[1] = 0
+            Robo_serial[2] = 0
+
         else:
-            Robo_serial[0] = 15
+            Robo_serial[0] = 8
+            Robo_serial[1] = 8
+            Robo_serial[2] = 8
         
         # Handle keyboard input
         key = cv2.waitKey(1)
