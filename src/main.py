@@ -28,7 +28,11 @@ if __name__ == "__main__":
         Manager for managing processes
         """
         manager = Manager()
-        processes_variables = manager.list([0, 0, 0, 0])
+        stop = 0
+        right_wheel = 0
+        middle_wheel = 0
+        left_wheel = 0
+        processes_variables = manager.list([right_wheel, middle_wheel, left_wheel, stop])
 
     except Exception as e:
         print("except: ", e)
@@ -38,6 +42,7 @@ if __name__ == "__main__":
     
     
     while True:
+
         stop = processes_variables[3]
 
         if stop:
