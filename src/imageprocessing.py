@@ -60,10 +60,10 @@ def start(processes_variables):
 
         else:
             #Check movement.py.calculate_linear_velocity
-            print(movement.calculate_linear_velocity(centerX,ball_coords[0], ball_coords[1], 8, right_wheel_angle, 120))
-            processes_variables[0] = movement.calculate_linear_velocity(centerX,ball_coords[0], ball_coords[1], 8, right_wheel_angle, 120)
-            processes_variables[1] = 0
-            processes_variables[2] = 0
+            print(movement.calculate_linear_velocity(centerX,ball_coords[0], 1, 8, right_wheel_angle, 120))
+            processes_variables[0] = movement.calculate_linear_velocity(centerX,ball_coords[0], 1, 20, right_wheel_angle, 90)
+            processes_variables[1] = movement.calculate_linear_velocity(centerX,ball_coords[0], 1, 20, middle_wheel_angle, 90)
+            processes_variables[2] = movement.calculate_linear_velocity(centerX,ball_coords[0], 1, 20, left_wheel_angle, 90)
 
         # Handle keyboard input
         key = cv2.waitKey(1)

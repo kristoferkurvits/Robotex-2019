@@ -32,7 +32,7 @@ if __name__ == "__main__":
         right_wheel = 0
         middle_wheel = 0
         left_wheel = 0
-        processes_variables = manager.list([right_wheel, middle_wheel, left_wheel, stop])
+        processes_variables = manager.list([0,0,0,0])
 
     except Exception as e:
         print("except: ", e)
