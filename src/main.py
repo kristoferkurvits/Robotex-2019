@@ -1,8 +1,20 @@
 import processes
 import imageprocessing
 from multiprocessing import Process, Value, Manager
-
 from serialcom import RoboSerial
+
+"""
+    function start processes
+    args:
+        1)Robo serial - serial object which communicates with the mainboard
+        2)Process variables - contains the speeds for the mainboard motors + stopping signal
+            needed for interprocess communication
+    returns:
+        1)run - value to signal whether a process should pause
+        2)robot_communication - returns the serial communication process (to close it if we need to)
+        3)robot_vision - returns the vision process (to close it if we need to)
+"""
+
 
 
 def start_processes(Robo_serial, process_variables):
@@ -19,39 +31,26 @@ def start_processes(Robo_serial, process_variables):
 if __name__ == "__main__":
 
     try:
-        print(RoboSerial.available_ports())
-        
+        print("Available ports: ", RoboSerial.available_ports())
         portname = "ttyACM0"
-        Robo_serial = RoboSerial("ttyACM0", "utf-8")
-
-        """
-        Manager for managing processes
-        """
+        Robo_serial = RoboSerial(portname, "utf-8")
         manager = Manager()
-        stop = 0
-        right_wheel = 0
-        middle_wheel = 0
-        left_wheel = 0
         processes_variables = manager.list([0,0,0,0])
+        run, robot_communication, robot_vision = start_processes(Robo_serial, processes_variables)
 
     except Exception as e:
-        print("except: ", e)
+        print("Reached exception in main: ", e)
+        exit()
 
-    run, robot_communication, robot_vision = start_processes(Robo_serial, processes_variables)
-
-    
-    
     while True:
 
         stop = processes_variables[3]
-
         if stop:
             robot_vision.close()
             robot_communication.close()
             exit()
 
-        input()
-        
+        input("Press any key to pause" if run.value else "Press any key to continue")
         run.value = not run.value
         stop = run.value
         print("Running: ", run.value)
