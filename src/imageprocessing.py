@@ -9,8 +9,9 @@ import main
 
 def start(processes_variables):
     stop = processes_variables[3]
-    
-
+    right_wheel = processes_variables[0]
+    middle_wheel = processes_variables[1]
+    left_wheel = processes_variables[2]
 
     device = config.get("vision", "video_capture_device")
     cap = cv2.VideoCapture(device)
@@ -25,6 +26,7 @@ def start(processes_variables):
 
 
     while cap.isOpened():
+        
         if stop:
             break
             # Read BGR frame
@@ -40,15 +42,15 @@ def start(processes_variables):
         print("Center: ", centerX, " ball_coords: ", ball_coords[0])
 
         if (ball_coords[0] < centerX + 80) and (ball_coords[0] > centerX - 80):
-            processes_variables[0] = 0
-            processes_variables[1] = 0
-            processes_variables[2] = 0
+            right_wheel = 0
+            middle_wheel = 0
+            left_wheel = 0
 
         else:
             #Check movement.py.calculate_linear_velocity
-            processes_variables[0] = 8
-            processes_variables[1] = 8
-            processes_variables[2] = 8
+            right_wheel = 8
+            middle_wheel = 8
+            left_wheel = 8
 
         # Handle keyboard input
         key = cv2.waitKey(1)
