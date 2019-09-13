@@ -3,6 +3,12 @@ from multiprocessing import Process, Value
 import imageprocessing
 import time
 
+"""
+right_wheel_angle = 120
+middle_wheel_angle = 0
+left_wheel_angle = 240
+"""
+
 def serial_worker(run, Robo_serial, processes_variables):
 
     while 1:
@@ -19,19 +25,20 @@ def serial_process(Robo_serial, speeds):
 
 
 
-def vision_worker(run, Robo_serial):
+#changed arguments name
+def vision_worker(run, process_variables):
     while 1:
         if run.value:
-            vision_process(Robo_serial)
+            vision_process(process_variables)
 
 
 
 """
 
 """
-def vision_process(Robo_serial):
+def vision_process(process_variables):
     print("vision thread")
-    imageprocessing.start(Robo_serial)
+    imageprocessing.start(process_variables)
 
     
 
