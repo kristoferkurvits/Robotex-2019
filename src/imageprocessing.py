@@ -5,17 +5,20 @@ import config
 import processes
 import main
 
-should_stop = False
+import robot_movement
 
-def stop():
-    global should_stop
 
-    return should_stop
+def start(processes_variables):
+    movement = robot_movement.Movement()
+    stop = processes_variables[3]
+    right_wheel = processes_variables[0]
+    middle_wheel = processes_variables[1]
+    left_wheel = processes_variables[2]
 
-def start(Robo_serial):
-    global should_stop
-    # optional TOOD: capture frames on separate thread
-    # Capture camera
+    right_wheel_angle = 120
+    middle_wheel_angle = 0
+    left_wheel_angle = 240
+
     device = config.get("vision", "video_capture_device")
     cap = cv2.VideoCapture(device)
     
@@ -27,8 +30,12 @@ def start(Robo_serial):
     frame_counter = 0
     frame_counter_start = time.time()
 
+
     while cap.isOpened():
-        # Read BGR frame
+        
+        if stop:
+            break
+            # Read BGR frame
         _, frame = cap.read()
 
         # Convert to HSV
@@ -40,26 +47,33 @@ def start(Robo_serial):
         centerX = frame.shape[1]/2
         print("Center: ", centerX, " ball_coords: ", ball_coords[0])
 
+
+        """
+        right_wheel_angle = 120
+        middle_wheel_angle = 0
+        left_wheel_angle = 240
+        """
         if (ball_coords[0] < centerX + 80) and (ball_coords[0] > centerX - 80):
-            Robo_serial[0] = 0
-            Robo_serial[1] = 0
-            Robo_serial[2] = 0
+            processes_variables[0] = 0
+            processes_variables[1] = 0
+            processes_variables[2] = 0
 
         else:
-            Robo_serial[0] = 8
-            Robo_serial[1] = 8
-            Robo_serial[2] = 8
-        
+            #Check movement.py.calculate_linear_velocity
+            print(movement.calculate_linear_velocity(centerX,ball_coords[0], 1, 8, right_wheel_angle, 120))
+            processes_variables[0] = movement.calculate_linear_velocity(centerX,ball_coords[0], 1, 20, right_wheel_angle, 90)
+            processes_variables[1] = movement.calculate_linear_velocity(centerX,ball_coords[0], 1, 20, middle_wheel_angle, 90)
+            processes_variables[2] = movement.calculate_linear_velocity(centerX,ball_coords[0], 1, 20, left_wheel_angle, 90)
+
         # Handle keyboard input
         key = cv2.waitKey(1)
 
         if key & 0xFF == ord("q"):
-            should_stop = True
-            print("imgprocess", should_stop)
+
             break
 
         # FPS display
-        
+
         frame_counter += 1
 
         if frame_counter % 10 == 0:
