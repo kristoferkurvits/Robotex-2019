@@ -5,13 +5,19 @@ import config
 import processes
 import main
 
+import robot_movement
 
 
 def start(processes_variables):
+    movement = robot_movement.Movement()
     stop = processes_variables[3]
     right_wheel = processes_variables[0]
     middle_wheel = processes_variables[1]
     left_wheel = processes_variables[2]
+
+    right_wheel_angle = 120
+    middle_wheel_angle = 0
+    left_wheel_angle = 240
 
     device = config.get("vision", "video_capture_device")
     cap = cv2.VideoCapture(device)
@@ -41,16 +47,23 @@ def start(processes_variables):
         centerX = frame.shape[1]/2
         print("Center: ", centerX, " ball_coords: ", ball_coords[0])
 
+
+        """
+        right_wheel_angle = 120
+        middle_wheel_angle = 0
+        left_wheel_angle = 240
+        """
         if (ball_coords[0] < centerX + 80) and (ball_coords[0] > centerX - 80):
-            right_wheel = 0
-            middle_wheel = 0
-            left_wheel = 0
+            processes_variables[0] = 0
+            processes_variables[1] = 0
+            processes_variables[2] = 0
 
         else:
             #Check movement.py.calculate_linear_velocity
-            right_wheel = 8
-            middle_wheel = 8
-            left_wheel = 8
+            print(movement.calculate_linear_velocity(centerX,ball_coords[0], ball_coords[1], 8, right_wheel_angle, 120))
+            processes_variables[0] = movement.calculate_linear_velocity(centerX,ball_coords[0], ball_coords[1], 8, right_wheel_angle, 120)
+            processes_variables[1] = 0
+            processes_variables[2] = 0
 
         # Handle keyboard input
         key = cv2.waitKey(1)

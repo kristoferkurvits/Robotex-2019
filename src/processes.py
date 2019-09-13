@@ -3,6 +3,12 @@ from multiprocessing import Process, Value
 import imageprocessing
 import time
 
+"""
+right_wheel_angle = 120
+middle_wheel_angle = 0
+left_wheel_angle = 240
+"""
+
 def serial_worker(run, Robo_serial, processes_variables):
 
     while 1:
