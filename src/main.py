@@ -41,8 +41,8 @@ if __name__ == "__main__":
         stop = processes_variables[3]
 
         if stop:
-            robot_vision.Close()
-            robot_communication.Close()
+            robot_vision.close()
+            robot_communication.close()
             exit()
 
         input()
