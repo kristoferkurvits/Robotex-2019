@@ -1,5 +1,5 @@
 import imageprocessing
-import time
+from multiprocessing import Process, Value
 
 """
     serial_worker - function that supervises the serial process to stop it when necessary

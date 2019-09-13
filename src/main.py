@@ -50,7 +50,7 @@ if __name__ == "__main__":
             robot_communication.close()
             exit()
 
-        input("Press any key to pause" if run.value else "Press any key to continue")
+        input()
         run.value = not run.value
         stop = run.value
         print("Running: ", run.value)

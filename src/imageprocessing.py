@@ -4,22 +4,31 @@ import vision
 import config
 import processes
 import main
-import robot_movement.calculate_linear_velocity as linear_mvmt
+import numpy as np
+import pyrealsense2 as rs
+from robot_movement import calculate_linear_velocity as linear_mvmt
 
-def moveornot(processes_variables, ballInCenter, middle_x_pixel=False, X=False, Y=False, wheel_speed=False, right_wheel_angle=False, left_wheel_angle=False, wheel_direction=False):
+
+def moveornot(processes_variables, ballInCenter, middle_x_pixel=False, X=False, Y=False, wheel_speed=False, right_wheel_angle=False, middle_wheel_angle=False, left_wheel_angle=False, movement_direction=False):
+
+    Y = 1
     if ballInCenter:
         processes_variables[0] = 0
         processes_variables[1] = 0
         processes_variables[2] = 0
     else:
-        processes_variables[0] = linear_mvmt(centerX,ball_coords[0], 1, 20, right_wheel_angle, 90)
-        processes_variables[1] = linear_mvmt(centerX,ball_coords[0], 1, 20, middle_wheel_angle, 90)
-        processes_variables[2] = linear_mvmt(centerX,ball_coords[0], 1, 20, left_wheel_angle, 90)
+        processes_variables[0] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, right_wheel_angle, movement_direction)
+        processes_variables[1] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, middle_wheel_angle, movement_direction)
+        processes_variables[2] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, left_wheel_angle, movement_direction)
 
 def move_forward(processes_variables, middle_x_pixel, X, Y, wheel_speed, right_wheel_angle, left_wheel_angle, movement_direction):
-    processes_variables[0] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, right_wheel_angle, movement_direction)
-    processes_variables[2] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, left_wheel_angle, movement_direction)
+    if Y == 0:
+        Y = 1
 
+    processes_variables[0] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, right_wheel_angle, movement_direction)
+    processes_variables[1] = 0
+    processes_variables[2] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, left_wheel_angle, movement_direction)
+    
 def start(processes_variables):
 
     right_wheel_angle = 120
@@ -72,9 +81,11 @@ def start(processes_variables):
                 moveornot(processes_variables ,True)
                 ballInCenter = True
             else:
-                moveornot(processes_variables ,False)
+                moveornot(processes_variables ,False, centerX, ball_x, ball_y, wheel_speed, right_wheel_angle, middle_wheel_angle, left_wheel_angle, movement_direction)
         else:
-            if ball_y < int(frame.shape[0]/5):
+            if ball_y < (int(frame.shape[0]/4) * 3):
+                print(ball_y, "BALLY---------")
+                print(int(frame.shape[0]/4), "FRAMESHAPE#######")
                 move_forward(processes_variables, centerX, ball_x, ball_y, wheel_speed, right_wheel_angle, left_wheel_angle, movement_direction)
         #CHANGED  
 
@@ -90,11 +101,6 @@ def start(processes_variables):
             fps = int(10 / (frame_counter_end - frame_counter_start))
             frame_counter = 0
             frame_counter_start = time.time()
-        
-        ball_x = int(ball_coords[0])
-        ball_y = int(ball_coords[1])
-        basket_x = int(basket_coords[0])
-        basket_y = int(basket_coords[1])
 
         distanceToBasket = depth_image.get_distance(int(basket_x), int(basket_y))
         distances = np.append(distances, round(distanceToBasket, 3))
