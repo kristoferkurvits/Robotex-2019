@@ -1,63 +1,60 @@
-import cv2
-import time
-import vision
-import config
+import processes
+import imageprocessing
+from multiprocessing import Process, Value, Manager
+from serialcom import RoboSerial
+
+"""
+    function start processes
+    args:
+        1)Robo serial - serial object which communicates with the mainboard
+        2)Process variables - contains the speeds for the mainboard motors + stopping signal
+            needed for interprocess communication
+    returns:
+        1)run - value to signal whether a process should pause
+        2)robot_communication - returns the serial communication process (to close it if we need to)
+        3)robot_vision - returns the vision process (to close it if we need to)
+"""
 
 
-def start():
-    # optional TOOD: capture frames on separate thread
-    # Capture camera
-    device = config.get("vision", "video_capture_device")
-    cap = cv2.VideoCapture(2)
 
-    # Frame timer for FPS display
-    fps = 0
-    frame_counter = 0
-    frame_counter_start = time.time()
+def start_processes(Robo_serial, process_variables):
+    
 
-    while cap.isOpened():
-        # Read BGR frame
-        _, frame = cap.read()
+    run = processes.Value("i", 1)
+    robot_communication = processes.Process(name="Serial", target=processes.serial_worker, args=(run, Robo_serial, process_variables))
+    robot_vision = processes.Process(name="Vision", target=processes.vision_worker, args=(run, process_variables))
+    robot_vision.start()
+    robot_communication.start()
 
-        # Convert to HSV
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-        # TODO: find ball coordinates in filtered image
-        ball_color_mask, basket_color_mask = vision.apply_ball_color_filter(hsv)
-
-        # TODO: also detect opponent basket
-        # TODO: run AI
-        # optional TODO: run AI on separate thread
-        
-        # Handle keyboard input
-        key = cv2.waitKey(1)
-
-        if key & 0xFF == ord("q"):
-            break
-
-        # FPS display
-        frame_counter += 1
-
-        if frame_counter % 10 == 0:
-            frame_counter_end = time.time()
-            fps = int(10 / (frame_counter_end - frame_counter_start))
-            frame_counter = 0
-            frame_counter_start = time.time()
-
-        cv2.putText(frame, str(fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
-
-        total_img = cv2.bitwise_or(ball_color_mask, basket_color_mask)
-
-        # Show frame
-        cv2.imshow("frame", frame)
-        cv2.imshow("ball_color", ball_color_mask)
-        cv2.imshow("basket color", basket_color_mask)
-        cv2.imshow("combined", total_img)
-
-    # Exit cleanly
-    cap.release()
-    cv2.destroyAllWindows()
-
+    return run, robot_communication, robot_vision
 
 if __name__ == "__main__":
-    start()
+
+    try:
+        print("Available ports: ", RoboSerial.available_ports())
+        portname = "ttyACM0"
+        Robo_serial = RoboSerial(portname, "utf-8")
+        manager = Manager()
+        processes_variables = manager.list([0,0,0,0])
+        run, robot_communication, robot_vision = start_processes(Robo_serial, processes_variables)
+
+    except Exception as e:
+        print("Reached exception in main: ", e)
+        exit()
+
+    while True:
+
+        stop = processes_variables[3]
+        if stop:
+            robot_vision.close()
+            robot_communication.close()
+            exit()
+
+        input("Press any key to pause" if run.value else "Press any key to continue")
+        run.value = not run.value
+        stop = run.value
+        print("Running: ", run.value)
+        
+            
+
+

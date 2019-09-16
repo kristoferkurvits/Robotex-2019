@@ -29,7 +29,7 @@ def start():
 
     # Capture camera
     device = config.get("vision", "video_capture_device")
-    cap = cv2.VideoCapture(2)
+    cap = cv2.VideoCapture(device)
 
     while cap.isOpened():
         # Read BGR frame
@@ -38,19 +38,14 @@ def start():
         # Convert to HSV
         hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
 
-        # TODO: also apply all the filters you do when actually running the robot (eg noise removal)
         # Apply color mask to HSV image
-
         mask = cv2.inRange(hsv, color_range["min"], color_range["max"])
 
         # Display filtered image
-
         cv2.imshow("frame", cv2.bitwise_and(bgr, bgr, mask=mask))
 
         # Handle keyboard input
-        key = cv2.waitKey(1)
-
-        if key & 0xFF == ord("q"):
+        if cv2.waitKey(5) & 0xFF == ord("q"):
             break
 
     # Overwrite color range
@@ -60,7 +55,6 @@ def start():
     # Exit cleanly
     cap.release()
     cv2.destroyAllWindows()
-
 
 if __name__ == "__main__":
     start()
