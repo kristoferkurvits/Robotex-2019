@@ -9,33 +9,34 @@ import pyrealsense2 as rs
 from robot_movement import calculate_linear_velocity as linear_mvmt
 
 
-def moveornot(processes_variables, ballInCenter, middle_x_pixel=False, X=False, Y=False, wheel_speed=False, right_wheel_angle=False, middle_wheel_angle=False, left_wheel_angle=False, movement_direction=False):
-
-    Y = 1
-    if ballInCenter:
-        processes_variables[0] = 0
-        processes_variables[1] = 0
-        processes_variables[2] = 0
-    else:
-        processes_variables[0] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, right_wheel_angle, movement_direction)
-        processes_variables[1] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, middle_wheel_angle, movement_direction)
-        processes_variables[2] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, left_wheel_angle, movement_direction)
-
-def move_forward(processes_variables, middle_x_pixel, X, Y, wheel_speed, right_wheel_angle, left_wheel_angle, movement_direction):
-    if Y == 0:
-        Y = 1
-
-    processes_variables[0] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, right_wheel_angle, movement_direction)
-    processes_variables[1] = 0
-    processes_variables[2] = linear_mvmt(middle_x_pixel,X, Y, wheel_speed, left_wheel_angle, movement_direction)
-    
-def start(processes_variables):
-
+def turnToFindTheBall(processes_variables, ballInCenter, middle_x_pixel=None, X=None, Y=None):
     right_wheel_angle = 120
     middle_wheel_angle = 0
     left_wheel_angle = 240
     wheel_speed = 20
-    movement_direction = 90
+    movement_direction_forward = 90
+
+    """
+    If ball is in center, move forward
+    else turn around its axis and find the ball
+    """
+    if ballInCenter:
+        print(ballInCenter, "BALLINCENTER")
+        #right wheel
+        processes_variables[0] = linear_mvmt(-wheel_speed, right_wheel_angle, movement_direction_forward, middle_x_pixel, X, Y)
+        processes_variables[1] = linear_mvmt(wheel_speed, middle_wheel_angle, movement_direction_forward, middle_x_pixel, X, Y)
+        processes_variables[2] = linear_mvmt(-wheel_speed, left_wheel_angle, movement_direction_forward, middle_x_pixel, X, Y)
+
+    else:
+        print(ballInCenter, "BALL EI TOHIKS OLLA CENTRIS")
+        processes_variables[0] = wheel_speed
+        processes_variables[1] = wheel_speed
+        processes_variables[2] = wheel_speed
+
+    
+def start(processes_variables):
+
+    
 
     pipeline = rs.pipeline()
     config = rs.config()
@@ -49,9 +50,6 @@ def start(processes_variables):
     fps = 0
     frame_counter = 0
     frame_counter_start = time.time()
-    ballInCenter = False
-
-
 
     while True:
         stop = processes_variables[3]
@@ -76,18 +74,19 @@ def start(processes_variables):
 
 
         #CHANGED
-        if not ballInCenter:
-            if (ball_coords[0] < centerX + 80) and (ball_coords[0] > centerX - 80):
-                moveornot(processes_variables ,True)
-                ballInCenter = True
-            else:
-                moveornot(processes_variables ,False, centerX, ball_x, ball_y, wheel_speed, right_wheel_angle, middle_wheel_angle, left_wheel_angle, movement_direction)
+
+        
+        if (ball_x > 0):
+            ballInCenter = True
+            turnToFindTheBall(processes_variables, ballInCenter, centerX, ball_x, ball_y)
+
         else:
-            if ball_y < (int(frame.shape[0]/4) * 3):
-                print(ball_y, "BALLY---------")
-                print(int(frame.shape[0]/4), "FRAMESHAPE#######")
-                move_forward(processes_variables, centerX, ball_x, ball_y, wheel_speed, right_wheel_angle, left_wheel_angle, movement_direction)
-        #CHANGED  
+            ballInCenter = False
+
+            turnToFindTheBall(processes_variables, ballInCenter, centerX, ball_x, ball_y)
+
+        
+        #CHANGED
 
         # Handle keyboard input
         if cv2.waitKey(5) & 0xFF == ord("q"):
