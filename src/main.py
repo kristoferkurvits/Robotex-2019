@@ -2,6 +2,8 @@ import processes
 import imageprocessing
 from multiprocessing import Process, Value, Manager
 from serialcom import RoboSerial
+import manual_movement
+import keyboard
 
 """
     function start processes
@@ -43,9 +45,25 @@ if __name__ == "__main__":
         exit()
 
     while True:
+        try:
+            input("Press (m) to switch between manual and automatic driving mode!")
+            if keyboard.is_pressed("m"):
+                print("------MANUAL MODE------")
+                robot_vision.close()
+                print("------VISION CLOSED------")
+                manual_movement.startManualMovement(Robo_serial)
+                robot_vision.start()
+                print("------VISION STARTED------")
+            
+
+                
+        except:
+            continue
+
 
         stop = processes_variables[3]
         if stop:
+
             robot_vision.close()
             robot_communication.close()
             exit()

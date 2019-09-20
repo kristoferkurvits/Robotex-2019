@@ -20,3 +20,6 @@ def calculate_direction_angle(middle_x_pixel, X, Y, direction):
 
     return direction
 
+
+
+
