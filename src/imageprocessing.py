@@ -23,9 +23,9 @@ def turnToFindTheBall(processes_variables, ballInCenter, middle_x_pixel=None, X=
     if ballInCenter:
         print(ballInCenter, "BALLINCENTER")
         #right wheel
-        processes_variables[0] = linear_mvmt(-wheel_speed, right_wheel_angle, movement_direction_forward, middle_x_pixel, X, Y)
-        processes_variables[1] = linear_mvmt(wheel_speed, middle_wheel_angle, movement_direction_forward, middle_x_pixel, X, Y)
-        processes_variables[2] = linear_mvmt(-wheel_speed, left_wheel_angle, movement_direction_forward, middle_x_pixel, X, Y)
+        processes_variables[0] = int(linear_mvmt(-wheel_speed, right_wheel_angle, movement_direction_forward, middle_x_pixel, X, Y))
+        processes_variables[1] = int(linear_mvmt(wheel_speed, middle_wheel_angle, movement_direction_forward, middle_x_pixel, X, Y))
+        processes_variables[2] = int(linear_mvmt(-wheel_speed, left_wheel_angle, movement_direction_forward, middle_x_pixel, X, Y))
 
     else:
         print(ballInCenter, "BALL EI TOHIKS OLLA CENTRIS")
@@ -76,13 +76,16 @@ def start(processes_variables):
         #CHANGED
 
         
-        if (ball_x > 0):
+        if (ball_x < centerX + 160) and (ball_x > centerX - 160):
+            print(ball_x, "BALL X")
+            print(centerX, "center X")
             ballInCenter = True
             turnToFindTheBall(processes_variables, ballInCenter, centerX, ball_x, ball_y)
 
         else:
             ballInCenter = False
-
+            print(ball_x, "BALL X")
+            print(centerX, "center X")
             turnToFindTheBall(processes_variables, ballInCenter, centerX, ball_x, ball_y)
 
         
@@ -119,5 +122,8 @@ def start(processes_variables):
         cv2.imshow("Combined img", total_img)
 
     # Exit cleanly
-    cap.release()
+
+
+    pipeline.stop()
+    #cap.release()
     cv2.destroyAllWindows()

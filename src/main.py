@@ -31,47 +31,86 @@ def start_processes(Robo_serial, process_variables):
     return run, robot_communication, robot_vision
 
 if __name__ == "__main__":
+    getOut = False
 
     try:
         print("Available ports: ", RoboSerial.available_ports())
-        portname = "ttyACM0"
+        portname = "ttyACM1"
         Robo_serial = RoboSerial(portname, "utf-8")
         manager = Manager()
         processes_variables = manager.list([0,0,0,0])
-        run, robot_communication, robot_vision = start_processes(Robo_serial, processes_variables)
 
     except Exception as e:
+        print("Available ports: ", RoboSerial.available_ports())
+        portname = "ttyACM1"
+        Robo_serial = RoboSerial(portname, "utf-8")
+        manager = Manager()
+        processes_variables = manager.list([0, 0, 0, 0])
         print("Reached exception in main: ", e)
         exit()
 
-    while True:
+    
+        print("SELECT DRIVING MODE - m for manual, n for auto")
+        char = manual_movement.getch()
+
         try:
-            input("Press (m) to switch between manual and automatic driving mode!")
-            if keyboard.is_pressed("m"):
-                print("------MANUAL MODE------")
-                robot_vision.close()
-                print("------VISION CLOSED------")
-                manual_movement.startManualMovement(Robo_serial)
-                robot_vision.start()
-                print("------VISION STARTED------")
-            
-
+            while not getOut:
                 
+                if char == "m":
+                    print("------MANUAL MODE------\n")
+
+                    print("------VISION CLOSED------\n")
+                    #Robo_serial.manipulate_failsafe(True)
+                    manual_movement.startManualMovement(Robo_serial, processes_variables)
+                    getOut = True
+                elif char == "n":
+                    print("------AUTO MODE------\n")
+                    run, robot_communication, robot_vision = start_processes(Robo_serial, processes_variables)
+                    #Robo_serial.manipulate_failsafe(False)
+                    getOut = True
         except:
-            continue
+            exit()
 
-
-        stop = processes_variables[3]
-        if stop:
+        """
+        if manual_movement.getch() == "s":
+            print("TAHAN SWITCHIDA")
+            getOut = False
 
             robot_vision.close()
             robot_communication.close()
-            exit()
+        """
 
-        input()
-        run.value = not run.value
-        stop = run.value
-        print("Running: ", run.value)
+
+        """
+        char = manual_movement.getch()
+        if char == "s":
+            try:
+                processes_variables[3] = 1
+                print(processes_variables[3], "PROCESSES VARIABLES 3")
+                getOut = False
+            except Exception as e:
+                print(e, "ERRRRRRRRRRRRRRRRRRROR")
+        """
+
+        while True:
+
+            #stop = processes_variables[3]
+
+            input()
+
+            run.value = not run.value
+            stop = run.value
+            print("Running: ", run.value)
+
+            if stop:
+                robot_vision.close()
+                robot_communication.close()
+                exit()
+
+            
+
+        
+        
         
             
 

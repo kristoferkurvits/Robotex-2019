@@ -24,6 +24,7 @@ def vision_worker(run, process_variables):
 
 def vision_process(process_variables):
     imageprocessing.start(process_variables)
+    print(process_variables, "MA OLEN PROCESSES.PY")
 
     
 

@@ -8,7 +8,7 @@ blobparams.filterByInertia = False
 blobparams.filterByColor = False
 blobparams.filterByCircularity = False
 blobparams.filterByArea = True
-blobparams.minArea = 75
+blobparams.minArea = 30 #75
 blobparams.maxArea = 50000
 blobparams.filterByConvexity = False
 detector = cv2.SimpleBlobDetector_create(blobparams)
@@ -33,7 +33,7 @@ def apply_ball_color_filter(hsv):
     hsv = cv2.medianBlur(hsv, 5)
     mask_ball = cv2.inRange(hsv, ball_color_range["min"], ball_color_range["max"])
     mask_basket = cv2.inRange(hsv, basket_color_range["min"], basket_color_range["max"])
-    kernel = np.ones(11)
+    kernel = np.ones(3) #11
     mask_ball = cv2.morphologyEx(mask_ball, cv2.MORPH_OPEN, kernel)
     mask_basket = cv2.morphologyEx(mask_basket, cv2.MORPH_OPEN, kernel)
 

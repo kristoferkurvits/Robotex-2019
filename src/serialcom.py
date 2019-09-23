@@ -10,36 +10,51 @@ class RoboSerial():
 		self.ser = serial.Serial(f"/dev/{portname}", 115200, timeout=0.01)
 		self.encoding = encoding
 		self.speeds = [0, 0, 0]
-		self.throw_speed = 1500
-		self.ser.write("d:1000")
-		thrower_init = self.ser.read(20)
-		self.ser.write("fs:0")
-		failsafe_init = self.ser.read(20)
-		print("Serial configured. Thrower_response", thrower_init,
-		 "failsafe_response",  failsafe_init)
+
+		print("Serial configured.")
 
 	def test_serial(self):
 		self.ser.write("gs\n".encode(self.encoding))
 		r = self.ser.read(20)
 		print("Test message response: ", r)
 
+	def manipulate_failsafe(self, stop):
+		if not stop:
+			self.ser.write("fs:1")
+			print("failsafe enabled")
+		else:
+			self.ser.write("fs:0")
+			print("failsafe disabled")
+
+
 	def send_speeds(self):
+
 		speed1, speed2, speed3 = self.speeds
 		to_send = f"sd:{speed1}:{speed2}:{speed3}\n"
+		print(to_send, "TOSEND")
 		self.ser.write(to_send.encode(self.encoding))
 		r = self.ser.read(20)
-		print(r)
+		print(r, "RESPONSEEEE")
 	
 	def start_throw(self, stop):
-
+		
+		print("olen start_throwis")
+		"""
+		self.ser.write("fs:0\n".encode(encoding))
+		failsafe_init = self.ser.read(20)
+		"""
 		if not stop:
-			self.ser.write("d:1500")
+			self.ser.write("d:210\n".encode(self.encoding))
+			print("wrote d:210")
 			read_throw_speed_response = self.ser.read(20)
 			print(f"throw speed response: {read_throw_speed_response}")
 		else:
-			self.ser.write("d:1000")
+			self.ser.write("d:100\n".encode(self.encoding))
+			print("wrote d:100")
 			read_thow_stop_response = self.ser.read(20)
 			print(f"throw stop response: {read_thow_stop_response}")
+		
+		
 
 	@staticmethod
 	def available_ports():

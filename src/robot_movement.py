@@ -12,7 +12,7 @@ def calculate_linear_velocity(wheel_speed, wheel_angle, direction, middle_x_pixe
         wheel_linear_velocity = wheel_speed * math.cos(math.radians(direction - wheel_angle))
 
 
-    return wheel_linear_velocity
+    return int(wheel_linear_velocity)
 
 
 def calculate_direction_angle(middle_x_pixel, X, Y, direction):
