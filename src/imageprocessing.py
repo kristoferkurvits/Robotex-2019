@@ -13,7 +13,7 @@ def turnToFindTheBall(processes_variables, ballInCenter, middle_x_pixel=None, X=
     right_wheel_angle = 120
     middle_wheel_angle = 0
     left_wheel_angle = 240
-    wheel_speed = 20
+    wheel_speed = 10
     movement_direction_forward = 90
 
     """

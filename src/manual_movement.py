@@ -6,6 +6,7 @@ img = np.zeros((256, 256, 3))
 button_delay = 0.2
 
 
+
 def getch():
 
 		fd = sys.stdin.fileno()
@@ -62,7 +63,7 @@ def startManualMovement(Robo_serial, processes_variables):
 			Robo_serial.start_throw(True)
 
 		elif (char == "b"):
-
+			print("Break reached in manual movement...breaking")
 			break
 		else:
 			continue
@@ -73,7 +74,7 @@ def startManualMovement(Robo_serial, processes_variables):
 		processes_variables[2] = left
 		print(processes_variables[0], processes_variables[1], processes_variables[2], "##########################")
 		"""
-
+		time.sleep(0.01)
 		Robo_serial.speeds = [right, middle, left]
 		Robo_serial.send_speeds()
 		print("tere")

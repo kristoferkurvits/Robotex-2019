@@ -10,7 +10,7 @@ class RoboSerial():
 		self.ser = serial.Serial(f"/dev/{portname}", 115200, timeout=0.01)
 		self.encoding = encoding
 		self.speeds = [0, 0, 0]
-
+		self.iters = 0
 		print("Serial configured.")
 
 	def test_serial(self):
@@ -31,10 +31,13 @@ class RoboSerial():
 
 		speed1, speed2, speed3 = self.speeds
 		to_send = f"sd:{speed1}:{speed2}:{speed3}\n"
-		print(to_send, "TOSEND")
+
 		self.ser.write(to_send.encode(self.encoding))
 		r = self.ser.read(20)
-		print(r, "RESPONSEEEE")
+		if self.iters % 20==0:
+			print(to_send, "Sent")
+			print(r, "Received")
+		self.iters += 1
 	
 	def start_throw(self, stop):
 		

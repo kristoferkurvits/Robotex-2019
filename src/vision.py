@@ -6,11 +6,15 @@ import config
 blobparams = cv2.SimpleBlobDetector_Params()
 blobparams.filterByInertia = False
 blobparams.filterByColor = False
-blobparams.filterByCircularity = False
+blobparams.filterByCircularity = True
+blobparams.minCircularity = 0.85
+blobparams.maxCircularity = 1
 blobparams.filterByArea = True
 blobparams.minArea = 30 #75
 blobparams.maxArea = 50000
-blobparams.filterByConvexity = False
+blobparams.filterByConvexity = True
+blobparams.minConvexity = 0.7
+blobparams.maxConvexity = 1
 detector = cv2.SimpleBlobDetector_create(blobparams)
 
 # Get color ranges and noise removal kernels from config
