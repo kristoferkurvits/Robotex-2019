@@ -3,26 +3,12 @@ import numpy as np
 from threading import currentThread
 import config
 
-blobparams = cv2.SimpleBlobDetector_Params()
-blobparams.filterByInertia = False
-blobparams.filterByColor = False
-blobparams.filterByCircularity = True
-blobparams.minCircularity = 0.85
-blobparams.maxCircularity = 1
-blobparams.filterByArea = True
-blobparams.minArea = 30 #75
-blobparams.maxArea = 50000
-blobparams.filterByConvexity = True
-blobparams.minConvexity = 0.7
-blobparams.maxConvexity = 1
-detector = cv2.SimpleBlobDetector_create(blobparams)
-
 # Get color ranges and noise removal kernels from config
 ball_color_range = config.get("colors", config.get("vision", "ball_color"))
 ball_noise_kernel = config.get("vision", "ball_noise_kernel")
 basket_color_range = config.get("colors", config.get("vision", "basket_color"))
 
-def apply_ball_color_filter(hsv):
+def apply_ball_color_filter(hsv, basket=False):
 
     """
         args: 
@@ -35,30 +21,33 @@ def apply_ball_color_filter(hsv):
     """
 
     hsv = cv2.medianBlur(hsv, 5)
-    mask_ball = cv2.inRange(hsv, ball_color_range["min"], ball_color_range["max"])
+    if basket:
+        masked_img = cv2.inRange(hsv, basket_color_range["min"], basket_color_range["max"])
+    else:
+        masked_img = cv2.inRange(hsv, ball_color_range["min"], ball_color_range["max"])
+    kernel = np.ones((2,2), np.uint8)
+    masked_img = cv2.morphologyEx(masked_img, cv2.MORPH_OPEN, kernel)
+    erosion = cv2.erode(masked_img, kernel, iterations=1)
+    dilation = cv2.dilate(erosion, kernel, iterations=2)
+    cont, hie = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    try:
+        max_cont = max(cont, key=cv2.contourArea)
+        (x, y), r = cv2.minEnclosingCircle(max_cont)
+    except Exception as e:
+        print("Nothing found")
+        x = 0; y = 0; r = 0
+    
+    
+    
+    """hsv = cv2.medianBlur(hsv, 5)
+    masked_img = cv2.inRange(hsv, ball_color_range["min"], ball_color_range["max"])
     mask_basket = cv2.inRange(hsv, basket_color_range["min"], basket_color_range["max"])
-    kernel = np.ones(3) #11
-    mask_ball = cv2.morphologyEx(mask_ball, cv2.MORPH_OPEN, kernel)
-    mask_basket = cv2.morphologyEx(mask_basket, cv2.MORPH_OPEN, kernel)
-
-    coords_ball = detector.detect(mask_ball)
-    coords_basket = detector.detect(mask_basket)
-
+    kernel = np.ones(7) #11
+    masked_img = cv2.morphologyEx(masked_img, cv2.MORPH_OPEN, kernel)
+    mask_basket = cv2.morphologyEx(mask_basket, cv2.MORPH_OPEN, kernel)"""
     # Only return the blob of the largest objects of the same color
-    largest_ball_size = 0
-    largest_ball_coords = [0, 0]
-    for keypoint in coords_ball:
-        if keypoint.size > largest_ball_size:
-            largest_ball_size = keypoint.size
-            largest_ball_coords = keypoint.pt
 
-    largest_basket_size = 0
-    largest_basket_coords = [0, 0]
-    for keypoint in coords_basket:
-        if keypoint.size > largest_basket_size:
-            largest_basket_size = keypoint.size
-            largest_basket_coords = keypoint.pt
-
-    return (mask_ball, mask_basket, largest_ball_coords, largest_basket_coords)
+    return (x, y, r, masked_img)
 
 

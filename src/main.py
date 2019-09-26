@@ -60,7 +60,7 @@ if __name__ == "__main__":
         portname = f"ttyACM{portname}"
         Robo_serial = RoboSerial(portname, "utf-8")
         manager = Manager()
-        processes_variables = manager.list([0,0,0,0])
+        processes_variables = manager.list([0,0,0,0, 0])
 
     except Exception as e:
         print("Reached exception in main: ", e)

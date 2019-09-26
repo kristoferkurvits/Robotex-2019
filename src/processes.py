@@ -13,9 +13,13 @@ def serial_worker(run, Robo_serial, processes_variables):
         if run.value:
             serial_process(Robo_serial, processes_variables)
 
-def serial_process(Robo_serial, speeds):
+def serial_process(Robo_serial, processes_variables):
 
-    Robo_serial.speeds = speeds[:3]
+    Robo_serial.speeds = processes_variables[:3]
+    if processes_variables[4]:
+        Robo_serial.start_throw(False)
+        processes_variables[4] = 0
+        
     Robo_serial.send_speeds()
 
 def vision_worker(run, process_variables):
@@ -23,7 +27,7 @@ def vision_worker(run, process_variables):
         if run.value:
             vision_process(process_variables)
 
-def vision_process(process_variable
+def vision_process(process_variables):
     imageprocessing.start(process_variables)
     print(process_variables, "MA OLEN PROCESSES.PY")
 
