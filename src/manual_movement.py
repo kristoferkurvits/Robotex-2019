@@ -28,7 +28,7 @@ def startManualMovement(Robo_serial, processes_variables):
 
 	while 1:
 		char = getch()
-
+		print("once")
 		if (char == "s"):
 			right = linear_mvmt(40, 120, 90)
 			middle = linear_mvmt(40, 0, 90)
@@ -66,7 +66,9 @@ def startManualMovement(Robo_serial, processes_variables):
 			print("Break reached in manual movement...breaking")
 			break
 		else:
-			continue
+			left = 0
+			right = 0
+			middle = 0
 		"""
 		ei tööta
 		processes_variables[0] = right

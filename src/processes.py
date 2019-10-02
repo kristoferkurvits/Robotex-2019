@@ -19,8 +19,15 @@ def serial_process(Robo_serial, processes_variables):
     if processes_variables[4]:
         Robo_serial.start_throw(False)
         processes_variables[4] = 0
-        
-    Robo_serial.send_speeds()
+        #time.sleep(1)
+    else:
+        Robo_serial.start_throw(True)
+
+    Robo_serial.refereeHandler()
+
+    if Robo_serial.working:
+        Robo_serial.send_speeds()
+
 
 def vision_worker(run, process_variables):
     while 1:

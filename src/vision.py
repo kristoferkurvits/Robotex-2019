@@ -3,6 +3,7 @@ import numpy as np
 from threading import currentThread
 import config
 
+
 # Get color ranges and noise removal kernels from config
 ball_color_range = config.get("colors", config.get("vision", "ball_color"))
 ball_noise_kernel = config.get("vision", "ball_noise_kernel")
@@ -35,7 +36,7 @@ def apply_ball_color_filter(hsv, basket=False):
         max_cont = max(cont, key=cv2.contourArea)
         (x, y), r = cv2.minEnclosingCircle(max_cont)
     except Exception as e:
-        print("Nothing found")
+        #print("Nothing found, returning 0, 0, 0")
         x = 0; y = 0; r = 0
     
     

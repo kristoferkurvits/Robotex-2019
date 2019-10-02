@@ -21,7 +21,7 @@ def turnToFindTheBall(processes_variables, ballInCenter, middle_x_pixel=None, ba
     else turn around its axis and find the ball
     """
     if ballInCenter:
-        print(ballInCenter, "BALLINCENTER")
+        #print(ballInCenter, "BALLINCENTER")
         #right wheel
         processes_variables[0] = int(linear_mvmt(-wheel_speed, right_wheel_angle, movement_direction_forward, middle_x_pixel, ball_X, ball_Y))
         processes_variables[1] = int(linear_mvmt(wheel_speed, middle_wheel_angle, movement_direction_forward, middle_x_pixel, ball_X, ball_Y))
@@ -37,20 +37,18 @@ def turnToFindTheBall(processes_variables, ballInCenter, middle_x_pixel=None, ba
                 processes_variables[2] = 20
                 time.sleep(1)
                 processes_variables[4] = 1
-                time.sleep(1)
                 
 
 
-
     else:
-        print(ballInCenter, "BALL EI TOHIKS OLLA CENTRIS")
+        #print(ballInCenter, "BALL EI TOHIKS OLLA CENTRIS")
         processes_variables[0] = wheel_speed
         processes_variables[1] = wheel_speed
         processes_variables[2] = wheel_speed
 
 
 def start(processes_variables):
-    
+
     
     cam_X = 640
     cam_Y = 480
@@ -87,7 +85,7 @@ def start(processes_variables):
         frame = frames.get_color_frame()
         depth_image = frames.get_depth_frame()
         frame = np.asanyarray(frame.get_data())
-        
+        frame = np.rot90(frame, k=3)
         if asd:
             processes_variables[0] = -10
             processes_variables[2] = 10
@@ -118,15 +116,15 @@ def start(processes_variables):
         #CHANGED
 
         if (ball_x < centerX + 160) and (ball_x > centerX - 160):
-            print(ball_x, "BALL ball_X")
-            print(centerX, "center ball_X")
+            #print(ball_x, "BALL ball_X")
+            #print(centerX, "center ball_X")
             ballInCenter = True
             turnToFindTheBall(processes_variables, ballInCenter, centerX, ball_x, ball_y, basket_x, basket_y)
 
         else:
             ballInCenter = False
-            print(ball_x, "BALL ball_X")
-            print(centerX, "center ball_X")
+            #print(ball_x, "BALL ball_X")
+            #print(centerX, "center ball_X")
             turnToFindTheBall(processes_variables, ballInCenter, centerX, ball_x, ball_y, basket_x, basket_y)
 
         

@@ -4,6 +4,7 @@ from multiprocessing import Process, Value, Manager
 from serialcom import RoboSerial
 import manual_movement
 import keyboard
+from realsense_settings import activate_rs_settings
 
 """
     function start processes
@@ -20,7 +21,6 @@ import keyboard
 
 
 def start_processes(Robo_serial, process_variables):
-    
 
     run = processes.Value("i", 1)
     robot_communication = processes.Process(name="Serial", target=processes.serial_worker, args=(run, Robo_serial, process_variables))
@@ -50,21 +50,33 @@ def choose_movement_method(robot_vision, robot_communication):
                 print("b pressed, exiting")
                 break
         except Exception as e:
-            print("Reached exception in manual/auto...exiting: ", e)
+            print("Reached exception in manual/auto... asking again: ", e)
             continue
 
+
+areWeAtTheCompetition = True
+
 if __name__ == "__main__":
+    activate_rs_settings()
+    if areWeAtTheCompetition:
+        field = input("Select field")
+        letter = input("Select letter")
+    else:
+        field = "A"
+        letter = "B"
     print("Available ports: ", RoboSerial.available_ports())
     portname = input("Enter desired port")
     try:
         portname = f"ttyACM{portname}"
-        Robo_serial = RoboSerial(portname, "utf-8")
+        Robo_serial = RoboSerial(portname, "utf-8", letter, field, areWeAtTheCompetition)
         manager = Manager()
         processes_variables = manager.list([0,0,0,0, 0])
 
     except Exception as e:
         print("Reached exception in main: ", e)
         exit()
+
+    
     run, robot_communication, robot_vision = start_processes(Robo_serial, processes_variables)
     choose_movement_method(robot_vision, robot_communication)
 

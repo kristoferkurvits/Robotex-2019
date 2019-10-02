@@ -5,12 +5,16 @@ import time
 
 class RoboSerial():
 
-	def __init__(self, portname, encoding):
+	def __init__(self, portname, encoding, name, field, working):
 		multiprocessing.Process.__init__(self)
-		self.ser = serial.Serial(f"/dev/{portname}", 115200, timeout=0.01)
+		self.ser = serial.Serial(f"/dev/{portname}", 115200, timeout=0.3)
+		self.name = name.upper()
+		self.field = field.upper()
 		self.encoding = encoding
 		self.speeds = [0, 0, 0]
 		self.iters = 0
+		# working == are we at competition
+		self.working = not working
 		print("Serial configured.")
 
 	def test_serial(self):
@@ -34,33 +38,60 @@ class RoboSerial():
 
 		self.ser.write(to_send.encode(self.encoding))
 		r = self.ser.read(20)
+		print(r)
 		if self.iters % 20==0:
-			print(to_send, "Sent")
-			print(r, "Received")
+			#print(to_send, "Sent")
+			#print(r, "Received")
+			self.iters = 0
 		self.iters += 1
 	
 	def start_throw(self, stop):
 		
-		print("olen start_throwis")
+		#print("olen start_throwis")
 		"""
 		self.ser.write("fs:0\n".encode(encoding))
 		failsafe_init = self.ser.read(20)
 		"""
 		if not stop:
 			self.ser.write("d:210\n".encode(self.encoding))
-			print("wrote d:210")
+			#print("wrote d:210")
 			read_throw_speed_response = self.ser.read(20)
-			print(f"throw speed response: {read_throw_speed_response}")
+			#print(f"throw speed response: {read_throw_speed_response}")
 		else:
 			self.ser.write("d:100\n".encode(self.encoding))
-			print("wrote d:100")
+			#print("wrote d:100")
 			read_thow_stop_response = self.ser.read(20)
-			print(f"throw stop response: {read_thow_stop_response}")
-		
-		
+			#print(f"throw stop response: {read_thow_stop_response}")
+
+	def refereeHandler(self):
+
+		received = self.ser.read(20).decode(self.encoding)
+	
+		if len(received) < 19:
+			return 
+		print("RECEIVED LENGTH: ", len(received), " String: ", received)
+		first_letter = received[5]
+		if first_letter != 'a':
+			return
+		field_name = received[6]
+		robot_name = received[7]
+		if field_name == self.field:
+			if robot_name == "X" or robot_name == self.name:
+				command = received[8:11]
+				if command == "STO":
+					self.working = False
+					self.ser.write(f"fr:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
+					print("REFEREE: STOP RECEIVED") 
+				elif command == "STA":
+					self.working = True
+					self.ser.write(f"fr:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
+					print("REFEREE: START RECEIVED") 
+				elif command == "PIN":
+					self.ser.write(f"fr:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
+					print("REFEREE: PING RECEIVED") 
 
 	@staticmethod
-	def available_ports():
+	def available_ports():	
 		ports = serial.tools.list_ports.comports()
 		for port in ports:
 			print(port)
