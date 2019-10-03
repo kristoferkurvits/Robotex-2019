@@ -12,7 +12,6 @@ class RoboSerial():
 		self.field = field.upper()
 		self.encoding = encoding
 		self.speeds = [0, 0, 0]
-		self.iters = 0
 		# working == are we at competition
 		self.working = not working
 		print("Serial configured.")
@@ -37,6 +36,10 @@ class RoboSerial():
 		to_send = f"sd:{speed1}:{speed2}:{speed3}\n"
 
 		self.ser.write(to_send.encode(self.encoding))
+		#r = self.ser.readline()
+		#print("response from send_speeds: ", r)
+		#self.ser.flush()
+		#self.ser.reset_input_buffer()
 		#r = self.ser.read(20)
 		#print(r, "rrrrr")
 		#self.ser.flush()
@@ -66,9 +69,9 @@ class RoboSerial():
 
 	def refereeHandler(self):
 		
-		received = self.ser.read(20).decode(self.encoding)
+		received = self.ser.readline().decode(self.encoding)
 		self.ser.flush()
-		if len(received) < 19:
+		if len(received) != 19:
 			return
 		first_letter = received[5]
 		field_name = received[6]
@@ -85,16 +88,16 @@ class RoboSerial():
 				print(command, "command")
 				if command == "STO":
 					self.working = False
-					self.ser.write(f"fr:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
+					self.ser.write(f"rf:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
 					
 					print("REFEREE: STOP RECEIVED") 
 				elif command == "STA":
 					self.working = True
-					self.ser.write(f"fr:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
+					self.ser.write(f"rf:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
 					
 					print("REFEREE: START RECEIVED") 
 				elif command == "PIN":
-					self.ser.write(f"fr:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
+					self.ser.write(f"rf:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
 					
 					print("REFEREE: PING RECEIVED") 
 		

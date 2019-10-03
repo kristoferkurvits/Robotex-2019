@@ -31,13 +31,15 @@ def apply_ball_color_filter(hsv, basket=False):
     erosion = cv2.erode(masked_img, kernel, iterations=1)
     dilation = cv2.dilate(erosion, kernel, iterations=2)
     cont, hie = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+    #print("cont", cont)
     try:
         max_cont = max(cont, key=cv2.contourArea)
         (x, y), r = cv2.minEnclosingCircle(max_cont)
+        #print("vision color filter: ", (x, y), r)
     except Exception as e:
         #print("Nothing found, returning 0, 0, 0")
         x = 0; y = 0; r = 0
+        print("vision exception: ", e)
     
     
     

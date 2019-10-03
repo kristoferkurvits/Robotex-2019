@@ -6,6 +6,7 @@ import processes
 import main
 import numpy as np
 import pyrealsense2 as rs
+from scipy import ndimage
 from robot_movement import calculate_linear_velocity as linear_mvmt
 
 
@@ -60,8 +61,8 @@ def start(processes_variables):
     pipeline.start(config)
     
     distances = np.zeros(10)
-    center_x_avg_array = [cam_X/2 for _ in range(10)]
-    center_y_avg_array = [cam_Y/2 for _ in range(10)]
+    center_x_avg_array = [cam_X/2 for _ in range(5)]
+    center_y_avg_array = [cam_Y/2 for _ in range(5)]
     # Frame timer for FPS display
     fps = 0
     frame_counter = 0
@@ -85,7 +86,10 @@ def start(processes_variables):
         frame = frames.get_color_frame()
         depth_image = frames.get_depth_frame()
         frame = np.asanyarray(frame.get_data())
-        frame = np.rot90(frame, k=3)
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        #frame = ndimage.rotate(frame, 270)
+        #frame = np.transpose(frame)
+        
         if asd:
             processes_variables[0] = -10
             processes_variables[2] = 10
@@ -100,7 +104,9 @@ def start(processes_variables):
         ball_x = int(ball_x)
         ball_y = int(ball_y)
         ball_r = int(ball_r)
+        print(f"BALL FOUND: {ball_x}, {ball_y}, {ball_r}")
         cv2.circle(frame, (ball_x, ball_y), ball_r, (0,255,0),1)
+        #print("imgprocessing return", a)
         basket_x = int(basket_x)
         basket_y = int(basket_y)
         basket_r = int(basket_r)
@@ -157,7 +163,7 @@ def start(processes_variables):
 
         # Show frame
         cv2.imshow("Raw", frame)
-        cv2.imshow("Masked", mask_ball)
+        #cv2.imshow("Masked", mask_ball)
 
     # Exit cleanly
 

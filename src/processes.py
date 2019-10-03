@@ -22,9 +22,7 @@ def serial_process(Robo_serial, processes_variables):
         #time.sleep(1)
     else:
         Robo_serial.start_throw(True)
-
     Robo_serial.refereeHandler()
-
     if Robo_serial.working:
         Robo_serial.send_speeds()
 

@@ -54,7 +54,7 @@ def choose_movement_method(robot_vision, robot_communication):
             continue
 
 
-areWeAtTheCompetition = True
+areWeAtTheCompetition = False
 
 if __name__ == "__main__":
     activate_rs_settings()
