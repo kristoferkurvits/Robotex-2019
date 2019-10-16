@@ -39,7 +39,7 @@ def apply_ball_color_filter(hsv, basket=False):
     except Exception as e:
         #print("Nothing found, returning 0, 0, 0")
         x = 0; y = 0; r = 0
-        print("vision exception: ", e)
+        
     
     
     

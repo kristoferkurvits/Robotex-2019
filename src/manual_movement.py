@@ -1,5 +1,9 @@
 from robot_movement import calculate_linear_velocity as linear_mvmt
-
+import vision
+import cv2
+import time
+import config
+import pyrealsense2 as rs
 import numpy as np
 import sys, termios, tty, os, time
 img = np.zeros((256, 256, 3))
@@ -27,6 +31,7 @@ def getch():
 def startManualMovement(Robo_serial, processes_variables):
 
 	while 1:
+		
 		char = getch()
 		print("once")
 		if (char == "s"):
@@ -50,15 +55,17 @@ def startManualMovement(Robo_serial, processes_variables):
 			left = linear_mvmt(40, 240, 270)
 			print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
 		elif (char == "q"):
-			right = linear_mvmt(-40, 120, 120)
+			right = linear_mvmt(0, 120, 120)
 			middle = linear_mvmt(-40, 0, 0)
-			left = linear_mvmt(-40, 240, 240)
+			left = linear_mvmt(0, 240, 240)
 		elif (char == "e"):
 			right = linear_mvmt(40, 120, 120)
 			middle = linear_mvmt(40, 0, 0)
 			left = linear_mvmt(40, 240, 240)
 		elif (char == "j"):
+			print("-----------------------------")
 			Robo_serial.start_throw(False) 
+
 		elif (char == "k"):
 			Robo_serial.start_throw(True)
 
@@ -69,18 +76,17 @@ def startManualMovement(Robo_serial, processes_variables):
 			left = 0
 			right = 0
 			middle = 0
-		"""
-		ei tööta
-		processes_variables[0] = right
-		processes_variables[1] = middle
-		processes_variables[2] = left
-		print(processes_variables[0], processes_variables[1], processes_variables[2], "##########################")
-		"""
+		
 		time.sleep(0.01)
 		Robo_serial.speeds = [right, middle, left]
 		Robo_serial.send_speeds()
 		print("tere")
+
 		
+	pipeline.stop()
+	cv2.destroyAllWindows()
+    
+
 
 
 

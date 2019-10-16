@@ -35,7 +35,9 @@ def choose_movement_method(robot_vision, robot_communication):
                 print("------MANUAL MODE------\n")
                 print("------VISION CLOSED------\n")
                 #Robo_serial.manipulate_failsafe(True)
+                robot_vision.start()
                 manual_movement.startManualMovement(Robo_serial, processes_variables)
+
                 continue
             elif char == "n":
                 print("------AUTO MODE------\n")
@@ -54,7 +56,7 @@ def choose_movement_method(robot_vision, robot_communication):
             continue
 
 
-areWeAtTheCompetition = False
+areWeAtTheCompetition = False #wait for referee start signal or not
 
 if __name__ == "__main__":
     activate_rs_settings()

@@ -50,22 +50,23 @@ class RoboSerial():
 	def start_throw(self, stop):
 		
 		#print("olen start_throwis")
-		"""
-		self.ser.write("fs:0\n".encode(encoding))
-		failsafe_init = self.ser.read(20)
-		"""
-		"""
+		
+		self.ser.write("fs:0\n".encode(self.encoding))
+		#failsafe_init = self.ser.read(20)
+		
 		if not stop:
-			self.ser.write("d:210\n".encode(self.encoding))
-			#print("wrote d:210")
-			read_throw_speed_response = self.ser.read(20)
+			time.sleep(0.001)
+			self.ser.write("d:180\n".encode(self.encoding)) # 2.5 m / 2.7 tilted up
+
+			print("wrote d:150")
 			#print(f"throw speed response: {read_throw_speed_response}")
 		else:
 			self.ser.write("d:100\n".encode(self.encoding))
 			#print("wrote d:100")
-			read_thow_stop_response = self.ser.read(20)
+			time.sleep(0.001)
+			self.ser.write("fs:1\n".encode(self.encoding))
 			#print(f"throw stop response: {read_thow_stop_response}")
-		"""
+		
 
 	def refereeHandler(self):
 		
