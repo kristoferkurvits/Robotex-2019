@@ -12,6 +12,7 @@ class RoboSerial():
 		self.field = field.upper()
 		self.encoding = encoding
 		self.speeds = [0, 0, 0]
+
 		# working == are we at competition
 		self.working = not working
 		print("Serial configured.")
@@ -34,8 +35,10 @@ class RoboSerial():
 
 		speed1, speed2, speed3 = self.speeds
 		to_send = f"sd:{speed1}:{speed2}:{speed3}\n"
+		
 
 		self.ser.write(to_send.encode(self.encoding))
+		
 		#r = self.ser.readline()
 		#print("response from send_speeds: ", r)
 		#self.ser.flush()
@@ -47,7 +50,7 @@ class RoboSerial():
 		#print(r)
 		
 
-	def start_throw(self, stop):
+	def start_throw(self, stop, speed=None):
 		
 		#print("olen start_throwis")
 		
@@ -56,20 +59,20 @@ class RoboSerial():
 		
 		if not stop:
 			time.sleep(0.001)
-			self.ser.write("d:180\n".encode(self.encoding)) # 2.5 m / 2.7 tilted up
+			self.ser.write(f"d:{speed}\n".encode(self.encoding)) # 2.5 m / 2.7 tilted up speed:180
 
-			print("wrote d:150")
+			print(f"wrote d:{speed}")
 			#print(f"throw speed response: {read_throw_speed_response}")
 		else:
 			self.ser.write("d:100\n".encode(self.encoding))
 			#print("wrote d:100")
-			time.sleep(0.001)
+			time.sleep(0.0005)
 			self.ser.write("fs:1\n".encode(self.encoding))
 			#print(f"throw stop response: {read_thow_stop_response}")
 		
 
 	def refereeHandler(self):
-		
+
 		received = self.ser.readline().decode(self.encoding)
 		self.ser.flush()
 		if len(received) != 19:

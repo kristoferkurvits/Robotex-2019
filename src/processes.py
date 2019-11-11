@@ -1,6 +1,7 @@
 import imageprocessing
 from multiprocessing import Process, Value
 import time
+from robot_LUT import get_thrower_speed
 
 """
     serial_worker - function that supervises the serial process to stop it when necessary
@@ -18,19 +19,21 @@ def serial_process(Robo_serial, processes_variables):
     sleep_next = False
     Robo_serial.speeds = processes_variables[:3]
     if processes_variables[4]:
-        print("processes_variables[4] on 111111111")
-        Robo_serial.start_throw(False)
-        time.sleep(0.001)
+        throwing_speed = 260
+        #get_thrower_speed(processes_variables[3])
+        print(f"VISKAN, Kaugus: {processes_variables[3]}, Kiirus: {throwing_speed}")
+        Robo_serial.start_throw(False, throwing_speed)
+        time.sleep(0.5)
         processes_variables[4] = 0
         sleep_next = True
-        Robo_serial.speeds = [-20, 0, 20]
+        Robo_serial.speeds = [-30, 0, 30]
     Robo_serial.refereeHandler()
     time.sleep(0.001)
     if Robo_serial.working:
         Robo_serial.send_speeds()
         time.sleep(0.001)
         if sleep_next:
-            time.sleep(1)
+            time.sleep(1.5)
             Robo_serial.start_throw(True)
         
     

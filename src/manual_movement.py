@@ -29,39 +29,39 @@ def getch():
 
 
 def startManualMovement(Robo_serial, processes_variables):
-
+	speed = 40
 	while 1:
 		
 		char = getch()
 		print("once")
 		if (char == "s"):
-			right = linear_mvmt(40, 120, 90)
-			middle = linear_mvmt(40, 0, 90)
-			left = linear_mvmt(40, 240, 90)
+			right = linear_mvmt(speed, 120, 90)
+			middle = linear_mvmt(speed, 0, 90)
+			left = linear_mvmt(speed, 240, 90)
 			print("ssssssssssssssssssssssssssssssssssssssssssssss")
 		elif (char == "d"):
-			right = linear_mvmt(40, 120, 180)
-			middle = linear_mvmt(40, 0, 180)
-			left = linear_mvmt(40, 240, 180)
+			right = linear_mvmt(speed, 120, 180)
+			middle = linear_mvmt(speed, 0, 180)
+			left = linear_mvmt(speed, 240, 180)
 			print("dddddddddddddddddddddddddddddddddddddddddddddd")
 		elif (char == "a"):
-			right = linear_mvmt(40, 120, 0)
-			middle = linear_mvmt(40, 0, 0)
-			left = linear_mvmt(40, 240, 0)
+			right = linear_mvmt(speed, 120, 0)
+			middle = linear_mvmt(speed, 0, 0)
+			left = linear_mvmt(speed, 240, 0)
 			print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 		elif (char == "w"):
-			right = linear_mvmt(40, 120, 270)
-			middle = linear_mvmt(40, 0, 270)
-			left = linear_mvmt(40, 240, 270)
+			right = linear_mvmt(speed, 120, 270)
+			middle = linear_mvmt(speed, 0, 270)
+			left = linear_mvmt(speed, 240, 270)
 			print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
 		elif (char == "q"):
-			right = linear_mvmt(0, 120, 120)
-			middle = linear_mvmt(-40, 0, 0)
-			left = linear_mvmt(0, 240, 240)
+			right = linear_mvmt(-speed, 120, 120)
+			middle = linear_mvmt(-speed, 0, 0)
+			left = linear_mvmt(-speed, 240, 240)
 		elif (char == "e"):
-			right = linear_mvmt(40, 120, 120)
-			middle = linear_mvmt(40, 0, 0)
-			left = linear_mvmt(40, 240, 240)
+			right = linear_mvmt(speed, 120, 120)
+			middle = linear_mvmt(speed, 0, 0)
+			left = linear_mvmt(speed, 240, 240)
 		elif (char == "j"):
 			print("-----------------------------")
 			Robo_serial.start_throw(False) 

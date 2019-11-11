@@ -67,8 +67,8 @@ def activate_rs_settings():
         serialized_string = advnc_mode.serialize_json()
         print("Controls as JSON: \n", serialized_string)
 
-
-        with open("camsettings_1110.json") as file:
+        #camsettings_1110.json
+        with open("camsettings2310.json") as file:
 
             as_json_object = json.load(file)
 

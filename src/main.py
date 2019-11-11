@@ -27,7 +27,10 @@ def start_processes(Robo_serial, process_variables):
     robot_vision = processes.Process(name="Vision", target=processes.vision_worker, args=(run, process_variables))
     return run, robot_communication, robot_vision
 
+started = False
+
 def choose_movement_method(robot_vision, robot_communication):
+    global started
     while 1:
         try:
             char = input("SELECT DRIVING MODE - m for manual, n for auto\n")
@@ -35,13 +38,17 @@ def choose_movement_method(robot_vision, robot_communication):
                 print("------MANUAL MODE------\n")
                 print("------VISION CLOSED------\n")
                 #Robo_serial.manipulate_failsafe(True)
-                robot_vision.start()
+                if not started:
+                    started = True
+                    robot_vision.start()
                 manual_movement.startManualMovement(Robo_serial, processes_variables)
 
                 continue
             elif char == "n":
                 print("------AUTO MODE------\n")
-                robot_vision.start()
+                if not started:
+                    started = True
+                    robot_vision.start()
                 robot_communication.start()
                 #Robo_serial.manipulate_failsafe(False)
                 break
@@ -72,6 +79,7 @@ if __name__ == "__main__":
         portname = f"ttyACM{portname}"
         Robo_serial = RoboSerial(portname, "utf-8", letter, field, areWeAtTheCompetition)
         manager = Manager()
+        # 0,1,2 - speeds. 3 - distance from basket, 4 - throw or no
         processes_variables = manager.list([0,0,0,0, 0])
 
     except Exception as e:
