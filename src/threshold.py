@@ -3,7 +3,7 @@ from functools import partial
 import config
 import numpy as np
 import pyrealsense2 as rs
-import get_img
+
 """blobparams = cv2.SimpleBlobDetector_Params()
 blobparams.filterByInertia = False
 blobparams.filterByColor = False
@@ -26,16 +26,16 @@ def apply_ball_color_filter(hsv, ball_color_range, params):
     dilation = cv2.dilate(erosion, kernel, iterations=2)
     cont, hie = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)"""
 
-    #hsv = cv2.blur(hsv, (2,2))
+    hsv = cv2.blur(hsv, (2,2))
     mask_ball = cv2.inRange(hsv, ball_color_range["min"], ball_color_range["max"])
     kernel = np.ones((2,2), np.uint8)
-    #masked_img = cv2.morphologyEx(mask_ball, cv2.MORPH_OPEN, kernel)
-    #erosion = cv2.erode(mask_ball kernel, iterations=1)
-    dilation = cv2.dilate(mask_ball, kernel, iterations=1)
+    masked_img = cv2.morphologyEx(mask_ball, cv2.MORPH_OPEN, kernel)
+    erosion = cv2.erode(masked_img, kernel, iterations=1)
+    dilation = cv2.dilate(erosion, kernel, iterations=1)
     #dilation = masked_img
-    cont, hie = cv2.findContours(mask_ball, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cont, hie = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    cv2.imshow("dil", mask_ball)
+    cv2.imshow("dil", dilation)
 
     """
     blobparams.minCircularity = params["circ"][0]
@@ -53,8 +53,6 @@ def apply_ball_color_filter(hsv, ball_color_range, params):
 
 
 def start():
-    #activate_rs_settings()
-    img_getter = get_img.imageCapRS2()
     # Ask for color name to threshold
     color_name = input("Enter color name: ")
 
@@ -92,45 +90,44 @@ def start():
     # Capture camera
     device = config.get("vision", "video_capture_device")
     #cap = cv2.VideoCapture(device)
+    pipeline = rs.pipeline()
+    config1 = rs.config()
+    config1.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 60)
+    config1.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 60)
+
+    pipeline.start(config1)
     while 1:
-        depth_frame, frame = img_getter.getFrame()
-        try:
+        # Read BGR frame
+        frames = pipeline.wait_for_frames()
+        frame = frames.get_color_frame()
+        depth_image = frames.get_depth_frame()
+        bgr = np.asanyarray(frame.get_data())
 
-            """
-            # Read BGR frame
-            frames = pipeline.wait_for_frames()
-            frame = frames.get_color_frame()
-            depth_image = frames.get_depth_frame()
-            bgr = np.asanyarray(frame.get_data())
-            """
-            # Convert to HSV
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # Convert to HSV
+        hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
 
-            # Apply color mask to HSV image
-            mask = cv2.inRange(hsv, color_range["min"], color_range["max"])
+        # Apply color mask to HSV image
+        mask = cv2.inRange(hsv, color_range["min"], color_range["max"])
 
-            cont = apply_ball_color_filter(hsv, color_range, params)
-            cv2.drawContours(frame, cont, -1, (0, 255, 255), 1)
+        cont = apply_ball_color_filter(hsv, color_range, params)
+        cv2.drawContours(bgr, cont, -1, (0, 255, 255), 1)
 
 
-            """for ball in balls:
-                ball_coords = ball.pt
-                ball_x = int(ball_coords[0])
-                ball_y = int(ball_coords[1])
-                cv2.putText(bgr, f"{ball_x} {ball_y}", (ball_x, ball_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255))
-    """
-            # Display filtered image
-            cv2.imshow("mask", mask)
-            cv2.imshow("frame", frame)
-            
-
-            # Handle keyboard input
-            if cv2.waitKey(5) & 0xFF == ord("q"):
-                break
-
+        """for ball in balls:
+            ball_coords = ball.pt
+            ball_x = int(ball_coords[0])
+            ball_y = int(ball_coords[1])
+            cv2.putText(bgr, f"{ball_x} {ball_y}", (ball_x, ball_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255))
+"""
+        # Display filtered image
+        cv2.imshow("mask", mask)
+        cv2.imshow("frame", bgr)
         
-        except Exception as e:
-            continue
+
+        # Handle keyboard input
+        if cv2.waitKey(5) & 0xFF == ord("q"):
+            break
+
     # Overwrite color range
     config.set("colors", color_name, color_range)
     for key in params:
@@ -144,8 +141,9 @@ def start():
 
     config.set("blobparams", "params", params)
     config.save()
+
     # Exit cleanly
-    img_getter.pipeline.stop()
+    cap.release()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

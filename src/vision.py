@@ -8,18 +8,7 @@ import config
 ball_color_range = config.get("colors", config.get("vision", "ball_color"))
 ball_noise_kernel = config.get("vision", "ball_noise_kernel")
 basket_color_range = config.get("colors", config.get("vision", "basket_color"))
-bounds_color_range = config.get("colors", config.get("vision", "bounds"))
 
-def find_bounds(hsv):
-    masked_img = cv2.inRange(hsv, bounds_color_range["min"], bounds_color_range["max"])
-    cont, hie = cv2.findContours(masked_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    try:
-        max_cont = max(cont, key=cv2.contourArea)
-        (x, y), r = cv2.minEnclosingCircle(max_cont)
-    except Exception as e:
-        print(e)
-        return
-    return (x, y, r, masked_img)
 def apply_ball_color_filter(hsv, basket=False):
 
     """
@@ -37,9 +26,9 @@ def apply_ball_color_filter(hsv, basket=False):
         masked_img = cv2.inRange(hsv, basket_color_range["min"], basket_color_range["max"])
     else:
         masked_img = cv2.inRange(hsv, ball_color_range["min"], ball_color_range["max"])
-    kernel = np.ones((2,2), np.uint8)
+    #kernel = np.ones((2,2), np.uint8)
     #masked_img = cv2.morphologyEx(masked_img, cv2.MORPH_OPEN, kernel)
-    erosion = cv2.erode(masked_img, kernel, iterations=1)
+    #erosion = cv2.erode(masked_img, kernel, iterations=1)
     #dilation = cv2.dilate(erosion, kernel, iterations=1)
     #dilation = masked_img
     cont, hie = cv2.findContours(masked_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -48,9 +37,7 @@ def apply_ball_color_filter(hsv, basket=False):
         max_cont = max(cont, key=cv2.contourArea)
         (x, y), r = cv2.minEnclosingCircle(max_cont)
         #print("vision color filter: ", (x, y), r)
-        if r < 2 and not basket:
-            raise NotImplementedError
-        if r < 15 and basket:
+        if r < 5:
             raise NotImplementedError
     except Exception as e:
         #print("Nothing found, returning 0, 0, 0")

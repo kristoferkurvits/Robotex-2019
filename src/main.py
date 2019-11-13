@@ -66,7 +66,7 @@ def choose_movement_method(robot_vision, robot_communication):
 areWeAtTheCompetition = False #wait for referee start signal or not
 
 if __name__ == "__main__":
-    #activate_rs_settings()
+    activate_rs_settings()
     if areWeAtTheCompetition:
         field = input("Select field")
         letter = input("Select letter")
