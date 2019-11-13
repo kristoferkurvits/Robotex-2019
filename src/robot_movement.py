@@ -7,6 +7,7 @@ right_wheel_angle = 120
 middle_wheel_angle = 0
 left_wheel_angle = 240
 movement_direction_forward = 90
+searching = 0
 
  
 def calculate_linear_velocity(wheel_speed, wheel_angle, direction, middle_x_pixel=None, X=None, Y=None):
@@ -23,9 +24,14 @@ def calculate_direction_angle(middle_x_pixel, X, Y, direction):
     return direction
 
 def rotateAroundSelf(processes_variables, circling_speed):
-    processes_variables[0] = circling_speed
-    processes_variables[1] = circling_speed
-    processes_variables[2] = circling_speed
+    global searching
+    processes_variables[0] = circling_speed + 22
+    processes_variables[1] = circling_speed + 22
+    processes_variables[2] = circling_speed + 22
+    time.sleep(0.1)
+    stopMoving(processes_variables)
+    time.sleep(0.2)
+    searching = 1
 
 def omniToBall(processes_variables, movement_speed, middle_x_pixel, ball_X, ball_Y):
     processes_variables[0] = -calculate_linear_velocity(movement_speed, right_wheel_angle, movement_direction_forward, middle_x_pixel, ball_X, ball_Y)
@@ -76,12 +82,12 @@ def alignVertical(processes_variables, diff_from_center, P, min_speed, max_speed
 def move(processes_variables, ballSeen, basket_distance, middle_x_pixel=None, ball_X=None, ball_Y=None, basket_X=None, basket_Y=None):
     
 
-
+    global searching
     # tagumine - liigub vasakule, + paremale
-    ball_y_requirement = 330
+    ball_y_requirement = 340
     omni_forward_speed = 40
     forward_speed = 20
-    circling_speed = 32
+    circling_speed = 25
     rotation_speed = 10
 
     ball_dist_from_reqY = ball_y_requirement - ball_Y
@@ -95,31 +101,28 @@ def move(processes_variables, ballSeen, basket_distance, middle_x_pixel=None, ba
         if ball_dist_from_reqY > 90:
             Y_speed = ball_dist_from_reqY/2
             calculated_speed = min(6+Y_speed, omni_forward_speed)
-            
-            omniToBall(processes_variables, omni_forward_speed, middle_x_pixel, ball_X, ball_Y)
-
-        elif ball_dist_from_reqY <= 90 and ball_dist_from_reqY > 10:
-
-            
+            if searching:
+                moveVertical(processes_variables, 50)
+                time.sleep(0.35)
+                searching = 0
+                return
+            else:
+                omniToBall(processes_variables, omni_forward_speed, middle_x_pixel, ball_X, ball_Y)
+        elif ball_dist_from_reqY <= 90 and ball_dist_from_reqY > 10: 
             alignVertical(processes_variables, ball_dist_from_reqY, 20, 8, forward_speed)
 
-        elif abs(ball_dist_from_centerX) > 35:
-
-            
+        elif abs(ball_dist_from_centerX) > 55:
             alignHorizontal(processes_variables, ball_dist_from_centerX, 20, 14, forward_speed)
 
         else:
-
-            if abs(basket_dist_from_centerX) < 7:
-                if abs(ball_dist_from_centerX) < 20:
-
+            if abs(basket_dist_from_centerX) < 4:
+                if abs(ball_dist_from_centerX) < 35:
                     stopMoving(processes_variables)
                     time.sleep(0.3)
                     processes_variables[4] = 1
                     return
                 else:
-                    
-                    alignHorizontal(processes_variables, ball_dist_from_centerX, 20, 5, forward_speed)
+                    alignHorizontal(processes_variables, ball_dist_from_centerX, 20, 30, forward_speed)
             else:
                 min_speed = 10
                 X_speed = basket_dist_from_centerX/(320/(circling_speed-min_speed))
@@ -127,11 +130,7 @@ def move(processes_variables, ballSeen, basket_distance, middle_x_pixel=None, ba
                     calculated_speed = min(min_speed+abs(X_speed), circling_speed)
                 else:
                     calculated_speed = -(min(min_speed+X_speed, circling_speed))
-                
                 rotateAroundBall(processes_variables, calculated_speed)
-
-
-    # kui palli ei näe, siis keerleme
     else:
         rotateAroundSelf(processes_variables, rotation_speed)
 

@@ -68,7 +68,7 @@ def activate_rs_settings():
         print("Controls as JSON: \n", serialized_string)
 
         #camsettings_1110.json
-        with open("camsettings2310.json") as file:
+        with open("settings_13_11.json") as file:
 
             as_json_object = json.load(file)
 
