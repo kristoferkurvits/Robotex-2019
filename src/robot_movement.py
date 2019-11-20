@@ -111,8 +111,8 @@ def move(processes_variables, ballSeen, basket_distance, middle_x_pixel=None, ba
             calculated_speed = min(6+Y_speed, omni_forward_speed)
             
             if searching:
-                moveVertical(processes_variables, 50)
-                time.sleep(0.35)
+                moveVertical(processes_variables, 60)
+                time.sleep(0.65)
                 searching = 0
                 return
             else:
@@ -126,7 +126,6 @@ def move(processes_variables, ballSeen, basket_distance, middle_x_pixel=None, ba
             alignHorizontal(processes_variables, ball_dist_from_centerX, 20, 18, forward_speed)
 
         else:
-            print(f"Basket: {basket_dist_from_centerX} --- Ball: {ball_dist_from_centerX}")
             if abs(basket_dist_from_centerX) < 2:
                 if abs(ball_dist_from_centerX) - 18 < 43:
                     

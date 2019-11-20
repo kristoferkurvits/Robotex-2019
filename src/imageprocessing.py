@@ -49,10 +49,10 @@ def start(processes_variables):
     # We take the mean x and y of the last 5 "balls" we've detected and see the deviation from that for
     # The current ball, so if we get noise in a random place, we are not likely to follow that
     #cap = cv2.VideoCapture(2)
-    processes_variables[0] = -40
+    processes_variables[0] = -75
     processes_variables[1] = 0
-    processes_variables[2] = 40
-    time.sleep(1)
+    processes_variables[2] = 75
+    time.sleep(1.6)
     while True:
         
 

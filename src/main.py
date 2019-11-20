@@ -63,8 +63,9 @@ def choose_movement_method(robot_vision, robot_communication):
             continue
 
 
-areWeAtTheCompetition = False #wait for referee start signal or not
-
+areWeAtTheCompetition = True #wait for referee start signal or not
+#PROCESSES if Robo_serial.drive: - kaua võistluse ajal otse sõita
+#config.ini basket_color
 if __name__ == "__main__":
     activate_rs_settings()
     if areWeAtTheCompetition:
@@ -72,7 +73,7 @@ if __name__ == "__main__":
         letter = input("Select letter")
     else:
         field = "A"
-        letter = "B"
+        letter = "A"
     print("Available ports: ", RoboSerial.available_ports())
     portname = input("Enter desired port")
     try:

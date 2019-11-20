@@ -17,9 +17,9 @@ def serial_worker(run, Robo_serial, processes_variables):
 
 def serial_process(Robo_serial, processes_variables):
     if Robo_serial.drive:
-        Robo_serial.speeds = [-30, 0, 30]
+        Robo_serial.speeds = [-60, 0, 60]
         Robo_serial.send_speeds()
-        time.sleep(2)
+        time.sleep(1)
         Robo_serial.drive = 0
     sleep_next = False
     Robo_serial.speeds = processes_variables[:3]
