@@ -42,8 +42,8 @@ def choose_movement_method(robot_vision, robot_communication):
                     started = True
                     robot_vision.start()
                 manual_movement.startManualMovement(Robo_serial, processes_variables)
-
                 continue
+
             elif char == "n":
                 print("------AUTO MODE------\n")
                 if not started:

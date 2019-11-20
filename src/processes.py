@@ -16,11 +16,15 @@ def serial_worker(run, Robo_serial, processes_variables):
             serial_process(Robo_serial, processes_variables)
 
 def serial_process(Robo_serial, processes_variables):
+    if Robo_serial.drive:
+        Robo_serial.speeds = [-30, 0, 30]
+        Robo_serial.send_speeds()
+        time.sleep(2)
+        Robo_serial.drive = 0
     sleep_next = False
     Robo_serial.speeds = processes_variables[:3]
     if processes_variables[4]:
-        throwing_speed = 260
-        #get_thrower_speed(processes_variables[3])
+        throwing_speed = get_thrower_speed(processes_variables[3])
         print(f"VISKAN, Kaugus: {processes_variables[3]}, Kiirus: {throwing_speed}")
         Robo_serial.start_throw(False, throwing_speed)
         time.sleep(0.5)
@@ -33,7 +37,7 @@ def serial_process(Robo_serial, processes_variables):
         Robo_serial.send_speeds()
         time.sleep(0.001)
         if sleep_next:
-            time.sleep(1.5)
+            time.sleep(1.05)
             Robo_serial.start_throw(True)
         
     

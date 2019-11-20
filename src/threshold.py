@@ -26,16 +26,16 @@ def apply_ball_color_filter(hsv, ball_color_range, params):
     dilation = cv2.dilate(erosion, kernel, iterations=2)
     cont, hie = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)"""
 
-    hsv = cv2.blur(hsv, (2,2))
+    #hsv = cv2.blur(hsv, (2,2))
     mask_ball = cv2.inRange(hsv, ball_color_range["min"], ball_color_range["max"])
-    kernel = np.ones((2,2), np.uint8)
+    kernel = np.ones((5,5), np.uint8)
     masked_img = cv2.morphologyEx(mask_ball, cv2.MORPH_OPEN, kernel)
     erosion = cv2.erode(masked_img, kernel, iterations=1)
     dilation = cv2.dilate(erosion, kernel, iterations=1)
     #dilation = masked_img
     cont, hie = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    cv2.imshow("dil", dilation)
+    cv2.imshow("VAATA SEDA", dilation)
 
     """
     blobparams.minCircularity = params["circ"][0]

@@ -27,7 +27,7 @@ def turnToFindTheBall(processes_variables, ballInCenter, basket_distance, middle
     move(processes_variables, ballInCenter, basket_distance, middle_x_pixel, ball_X, ball_Y, basket_X, basket_Y)
 
 def start(processes_variables):
-    auto = 0
+    auto = 1
     
     cam_X = 640
     cam_Y = 480
@@ -38,10 +38,7 @@ def start(processes_variables):
 
     pipeline.start(config)
     
-    center_x_avg_array = [cam_X/2 for _ in range(3)]
-    center_y_avg_array = [cam_Y/2 for _ in range(3)]
     center_basket_avg_array = [1.5 for _ in range(5)] #metres
-    basket_x_avg_array = [0 for _ in range(1)]
     # Frame timer for FPS display
     fps = 0
     frame_counter = 0
@@ -52,7 +49,10 @@ def start(processes_variables):
     # We take the mean x and y of the last 5 "balls" we've detected and see the deviation from that for
     # The current ball, so if we get noise in a random place, we are not likely to follow that
     #cap = cv2.VideoCapture(2)
-
+    processes_variables[0] = -40
+    processes_variables[1] = 0
+    processes_variables[2] = 40
+    time.sleep(1)
     while True:
         
 
@@ -72,41 +72,29 @@ def start(processes_variables):
 
         #_, frame = cap.read()
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+
         
         ball_x, ball_y, ball_r, mask_ball = vision.apply_ball_color_filter(hsv, basket=False)
         basket_x, basket_y, basket_r, mask_basket = vision.apply_ball_color_filter(hsv, basket=True)
         
-        ball_x = int(ball_x)
-        ball_y = int(ball_y)
-        ball_r = int(ball_r)
-        cv2.circle(frame, (ball_x, ball_y), ball_r, (0,255,0),1)
-        #print("imgprocessing return", a)
-        basket_x = int(basket_x)
-        basket_y = int(basket_y)
-        basket_r = int(basket_r)
+        if ball_x != None:
+            cv2.circle(frame, (ball_x, ball_y), ball_r, (0,255,0),1)
         
-        basket_distance = round(depth_frame.get_distance(basket_x, basket_y), 2)
-        processes_variables[3] = basket_distance
+        if basket_x != None:
+            basket_distance = round(depth_frame.get_distance(basket_x, basket_y), 2)
+            center_basket_avg_array.pop(0); center_basket_avg_array.append(basket_distance)
+            cv2.circle(frame, (basket_x, basket_y), basket_r, (0,0,255),1)
+            processes_variables[3] = np.mean(center_basket_avg_array)
+        else:
+            basket_distance = -1
         
-        basket_x_avg_array.pop(0); basket_x_avg_array.append(basket_x)
-        basket_x = int(np.mean(basket_x_avg_array))
-        center_basket_avg_array.pop(0); center_basket_avg_array.append(basket_distance)
-
-
-
-        cv2.circle(frame, (basket_x, basket_y), basket_r, (0,0,255),1)
-
-        centerX = frame.shape[1]/2# + 18
-
-        center_x_avg_array.pop(0); center_x_avg_array.append(ball_x)
-        ball_x = int(np.mean(center_x_avg_array))
-        center_y_avg_array.pop(0); center_y_avg_array.append(ball_y)
-        ball_y = int(np.mean(center_y_avg_array))
+        centerX = frame.shape[1]/2 + 18 # enne 18
 
         #CHANGED
         if auto:
             #if (ball_x < centerX + 160) and (ball_x > centerX - 160):
-            if (ball_x != 0):
+            if (ball_x != None):
                 #print(ball_x, "BALL ball_X")
                 #print(centerX, "center ball_X")
                 ballInCenter = True
@@ -144,24 +132,30 @@ def start(processes_variables):
         
 
         #cv2.putText(frame, f"d: {meanDistToBasket}", (ball_x, ball_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
-        cv2.putText(frame, f"{ball_x} {ball_y}", (ball_x, ball_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255))
+        if ball_x != None:
+            cv2.putText(frame, f"{ball_x} {ball_y}", (ball_x, ball_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255))
         #cv2.putText(frame, f"{basket_x} {basket_y}", (200, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0))
 
         # info frame
         info_frame = np.zeros_like(frame)
+        if ball_x != None:
+            ball_diff_str = f"Ball diff: {cam_X/2-ball_x}"
+        else:
+            ball_diff_str = "No ball"
+        if basket_x != None:
+            basket_diff_str = f"Basket diff: {cam_X/2-basket_x+20}"
+        else:
+            basket_diff_str = "No basket"
 
-        ball_diff_str = f"Ball diff: {cam_X/2-ball_x}" if ball_x != 0 else "No ball"
-        basket_diff_str = f"Basket diff: {cam_X/2-basket_x+20}" if basket_x != 0 else "No basket"
         basket_distance_str = f"Basket dist: {basket_distance}"
         cv2.putText(info_frame, f"FPS: {fps}", (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
         cv2.putText(info_frame, ball_diff_str, (5, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
         cv2.putText(info_frame, basket_diff_str, (5, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
         cv2.putText(info_frame, basket_distance_str, (5, 120), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
-        time.sleep(0.5)
-        print(basket_distance_str)
         # Show frame
         cv2.line(frame, (int(centerX), 0), (int(centerX), cam_Y), (255, 255, 255), 2)
-        cv2.line(frame, (int(basket_x), int(basket_y)), (int(basket_x), int(basket_y)), (150, 150, 0), 6)
+        if basket_x != None:
+            cv2.line(frame, (int(basket_x), int(basket_y)), (int(basket_x), int(basket_y)), (150, 150, 0), 9)
         frame = np.concatenate([frame, info_frame], axis=1)
         cv2.imshow("Raw", frame)
         #cv2.imshow("Depth", depth_image)

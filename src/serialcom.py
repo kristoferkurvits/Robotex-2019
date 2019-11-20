@@ -12,7 +12,7 @@ class RoboSerial():
 		self.field = field.upper()
 		self.encoding = encoding
 		self.speeds = [0, 0, 0]
-
+		self.drive = 0
 		# working == are we at competition
 		self.working = not working
 		print("Serial configured.")
@@ -98,6 +98,7 @@ class RoboSerial():
 				elif command == "STA":
 					self.working = True
 					self.ser.write(f"rf:a{self.field}{self.name}ACK-----\n".encode(self.encoding))
+					self.drive = 1
 					
 					print("REFEREE: START RECEIVED") 
 				elif command == "PIN":
