@@ -63,7 +63,7 @@ def choose_movement_method(robot_vision, robot_communication):
             continue
 
 
-areWeAtTheCompetition = True #wait for referee start signal or not
+areWeAtTheCompetition = False #wait for referee start signal or not
 #PROCESSES if Robo_serial.drive: - kaua võistluse ajal otse sõita
 #config.ini basket_color
 if __name__ == "__main__":

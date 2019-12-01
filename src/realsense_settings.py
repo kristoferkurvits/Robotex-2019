@@ -67,8 +67,9 @@ def activate_rs_settings():
         serialized_string = advnc_mode.serialize_json()
         print("Controls as JSON: \n", serialized_string)
 
-        #camsettings_1110.json
-        with open("camsettings2310.json") as file:
+  
+        #camsettings2310
+        with open("robotex_cam.json") as file:
 
             as_json_object = json.load(file)
 

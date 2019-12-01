@@ -38,7 +38,7 @@ def start(processes_variables):
 
     pipeline.start(config)
     
-    center_basket_avg_array = [1.5 for _ in range(5)] #metres
+    center_basket_avg_array = [1.5 for _ in range(12)] #metres
     # Frame timer for FPS display
     fps = 0
     frame_counter = 0

@@ -90,7 +90,7 @@ def move(processes_variables, ballSeen, basket_distance, middle_x_pixel=None, ba
     global searching
     # tagumine - liigub vasakule, + paremale
     ball_y_requirement = 340
-    omni_forward_speed = 70
+    omni_forward_speed = 90
     forward_speed = 20
     circling_speed = 50
     rotation_speed = 40
@@ -111,7 +111,7 @@ def move(processes_variables, ballSeen, basket_distance, middle_x_pixel=None, ba
             calculated_speed = min(6+Y_speed, omni_forward_speed)
             
             if searching:
-                moveVertical(processes_variables, 60)
+                moveVertical(processes_variables, omni_forward_speed)
                 time.sleep(0.65)
                 searching = 0
                 return
